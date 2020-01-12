@@ -14,7 +14,8 @@
     "types": [
       "webpack-env",
       "mocha",
-      "chai"
+      "chai",
+      "firefox-webext-browser"
     ],
     "paths": {
       "@/*": [
