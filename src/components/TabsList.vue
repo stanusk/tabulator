@@ -1,9 +1,13 @@
 <template>
-    <ul>
-        <li v-for="(title, i) of tabTitles" v-bind:key="i">
+    <b-list-group>
+        <b-list-group-item
+            button
+            v-for="(title, i) of tabTitles"
+            v-bind:key="i"
+        >
             {{ title }}
-        </li>
-    </ul>
+        </b-list-group-item>
+    </b-list-group>
 </template>
 
 <script lang="ts">
