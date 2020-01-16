@@ -1,13 +1,13 @@
-import { expect } from "chai";
-import { shallowMount } from "@vue/test-utils";
-import HelloWorld from "@/components/HelloWorld.vue";
+import { expect } from 'chai';
+import { shallowMount } from '@vue/test-utils';
+import TabsList from '@/components/TabsList.vue';
 
-describe("HelloWorld.vue", () => {
-  it("renders props.msg when passed", () => {
-    const msg = "new message";
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
+describe('TabsList.vue', () => {
+    it('renders props.msg when passed', () => {
+        const msg = 'new message';
+        const wrapper = shallowMount(TabsList, {
+            propsData: { msg },
+        });
+        expect(wrapper.text()).to.include(msg);
     });
-    expect(wrapper.text()).to.include(msg);
-  });
 });
