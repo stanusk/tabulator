@@ -5,7 +5,7 @@
             v-for="tab of tabs"
             v-bind:key="tab.id"
             :active="tab.active"
-            @click="highlight(tab.id)"
+            @click="activateTab(tab.id)"
             class="d-flex justify-content-between align-items-center"
         >
             <span class="tab-title-text">
@@ -30,7 +30,7 @@
             <b-icon
                 icon="x-square-fill"
                 variant="dark"
-                @click="closeTab(tab.id)"
+                @click.stop="closeTab(tab.id)"
                 class="h3"
             >
             </b-icon>
@@ -39,22 +39,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import Tab = browser.tabs.Tab;
 
 @Component
 export default class TabsList extends Vue {
-    tabs: Tab[] = [];
-    selectedTabs: Tab[] = [];
+    @Prop({ default: () => [] })
+    tabs!: Tab[];
 
-    mounted() {
-        browser.tabs.query({}).then((tabs: Tab[]) => {
-            this.tabs = tabs;
-        });
-    }
+    @Prop({ default: () => [] })
+    selectedTabs!: Tab[];
 
-    highlight(tabId: number) {
-        browser.tabs.update(tabId, { active: true });
+    activateTab(tabId: number) {
+        this.$emit('activate-tab', tabId);
     }
 
     isSelected(tab: Tab) {
@@ -62,21 +59,11 @@ export default class TabsList extends Vue {
     }
 
     toggleSelected(tab: Tab) {
-        const addTab = (addedTab: Tab) => {
-            return [...this.selectedTabs, addedTab];
-        };
-
-        const removeTab = (removedTab: Tab) => {
-            return this.selectedTabs.filter(t => t.id !== removedTab.id);
-        };
-
-        this.selectedTabs = this.isSelected(tab) ? removeTab(tab) : addTab(tab);
+        this.$emit('toggle-selected-tab', tab);
     }
 
     closeTab(tabId: number) {
-        browser.tabs.remove(tabId).then(_ => {
-            this.tabs = this.tabs.filter(tab => tab.id !== tabId);
-        });
+        this.$emit('close-tab', tabId);
     }
 
     // get defaultText() {
