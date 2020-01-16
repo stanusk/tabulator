@@ -4,8 +4,13 @@
             button
             v-for="(title, i) of tabTitles"
             v-bind:key="i"
+            class="d-flex justify-content-between align-items-center"
         >
-            {{ title }}
+            <span class="tab-title-text">
+                {{ title }}
+            </span>
+            <b-form-checkbox> </b-form-checkbox>
+            <b-icon icon="x-square-fill" variant="danger"> </b-icon>
         </b-list-group-item>
     </b-list-group>
 </template>
@@ -31,7 +36,10 @@ export default class TabsList extends Vue {
 </script>
 
 <style scoped>
-p {
-    font-size: 20px;
+.tab-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
 }
 </style>
