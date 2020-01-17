@@ -32,15 +32,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Project } from '@/typings';
+import { Getter } from 'vuex-class';
+import { PROJECTS } from '@/store/getter-types';
+import { REMOVE_PROJECT } from '@/store/action-types';
 
 @Component
 export default class Projects extends Vue {
-    projects: Project[] = [];
-    created(): void {
-        browser.storage.sync.get('projects').then(result => {
-            this.projects = JSON.parse(result.projects);
-        });
-    }
+    @Getter(PROJECTS)
+    projects!: Project[];
 
     revive(project: Project) {
         const urls: string[] = project.tabs.map(tab => {
@@ -51,14 +50,7 @@ export default class Projects extends Vue {
         });
         browser.windows.create({ url: urls });
 
-        this.projects = this.projects.filter(p => p.name !== project.name);
-        this.uploadStoredProjects();
-    }
-
-    // todo: unify with uploadStoredProjects in Home.vue
-    uploadStoredProjects() {
-        const projectsString = JSON.stringify(this.projects);
-        browser.storage.sync.set({ projects: projectsString });
+        this.$store.dispatch(REMOVE_PROJECT, project);
     }
 }
 </script>

@@ -18,6 +18,9 @@ import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import Tab = browser.tabs.Tab;
 import { Project } from '@/typings';
+import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
+import { Getter } from 'vuex-class';
+import { PROJECTS } from '@/store/getter-types';
 
 @Component({
     components: {
@@ -28,12 +31,16 @@ import { Project } from '@/typings';
 export default class Home extends Vue {
     tabs: Tab[] = [];
     selectedTabs: Tab[] = [];
-    storedProjects: Project[] = [];
+
+    @Getter(PROJECTS)
+    projects!: Project[];
 
     created() {
         browser.tabs.query({}).then(tabs => {
             this.tabs = tabs as Tab[];
         });
+
+        this.$store.dispatch(DOWNLOAD_PROJECTS);
     }
 
     onToggleSelected(tab: Tab) {
@@ -64,7 +71,6 @@ export default class Home extends Vue {
 
     onCreateProject(projectName: string) {
         this.addNewProject(projectName);
-        this.uploadStoredProjects();
         this.onCloseTab(this.selectedTabs.map(tab => tab.id || 0));
         this.selectedTabs = [];
     }
@@ -74,13 +80,7 @@ export default class Home extends Vue {
             name: projectName,
             tabs: this.selectedTabs,
         };
-
-        this.storedProjects = [...this.storedProjects, newProject];
-    }
-
-    uploadStoredProjects() {
-        const projectsString = JSON.stringify(this.storedProjects);
-        browser.storage.sync.set({ projects: projectsString });
+        this.$store.dispatch(ADD_PROJECT, newProject);
     }
 }
 </script>
