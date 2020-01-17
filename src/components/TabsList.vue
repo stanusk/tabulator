@@ -63,7 +63,7 @@ export default class TabsList extends Vue {
     }
 
     closeTab(tabId: number) {
-        this.$emit('close-tab', tabId);
+        this.$emit('close-tab', [tabId]);
     }
 
     // get defaultText() {

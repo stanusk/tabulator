@@ -8,7 +8,7 @@
         </b-form-input>
 
         <b-button @click="createProject(projectName)" variant="outline-primary">
-            <b-icon icon="upload"> </b-icon>
+            <b-icon icon="cloud-upload"> </b-icon>
         </b-button>
     </div>
 </template>
