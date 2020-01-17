@@ -20,10 +20,7 @@ import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import Tab = browser.tabs.Tab;
 import Window = browser.windows.Window;
-import { Project } from '@/typings';
 import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
-import { Getter } from 'vuex-class';
-import { PROJECTS } from '@/store/getter-types';
 
 @Component({
     components: {
@@ -34,9 +31,6 @@ import { PROJECTS } from '@/store/getter-types';
 export default class Tabs extends Vue {
     bWindows: Window[] = [];
     selectedTabs: Tab[] = [];
-
-    @Getter(PROJECTS)
-    projects!: Project[];
 
     created() {
         browser.windows.getAll({ populate: true }).then(windows => {

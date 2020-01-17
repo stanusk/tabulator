@@ -42,14 +42,22 @@ export default class Projects extends Vue {
     projects!: Project[];
 
     revive(project: Project) {
-        const urls: string[] = project.tabs.map(tab => {
-            const url = tab.url || '';
-            const urlTargetIndex = url.indexOf('http');
+        const urlsByWindowId = project.tabs.reduce((urls, tab) => {
+            let urlsArray: string[] = urls[tab.windowId || 0];
+            if (urlsArray) {
+                urls[tab.windowId || 0] = [...urlsArray, tab.url || ''];
+            } else {
+                urls[tab.windowId || 0] = [tab.url || ''];
+            }
 
-            return url.substring(urlTargetIndex);
+            return urls;
+        }, {} as { [windowId: number]: string[] });
+
+        Object.values(urlsByWindowId).forEach(urls => {
+            browser.windows.create({ url: urls });
         });
-        browser.windows.create({ url: urls });
 
+        // todo: remove only if success
         this.$store.dispatch(REMOVE_PROJECT, project);
     }
 }
