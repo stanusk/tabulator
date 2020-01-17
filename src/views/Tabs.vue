@@ -31,7 +31,7 @@ import { PROJECTS } from '@/store/getter-types';
         CreateProject,
     },
 })
-export default class Home extends Vue {
+export default class Tabs extends Vue {
     bWindows: Window[] = [];
     selectedTabs: Tab[] = [];
 
