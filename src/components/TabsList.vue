@@ -1,12 +1,12 @@
 <template>
-    <b-list-group>
+    <b-list-group flush>
         <b-list-group-item
             button
             v-for="tab of tabs"
             v-bind:key="tab.id"
-            :active="tab.active"
             @click="activateTab(tab.id)"
-            class="d-flex justify-content-between align-items-center"
+            class="tab d-flex justify-content-between align-items-center p-2"
+            :class="{ highlight: tab.active }"
         >
             <span class="tab-title-text">
                 {{ tab.title }}
@@ -72,11 +72,16 @@ export default class TabsList extends Vue {
 }
 </script>
 
-<style scoped>
-.tab-title-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
+<style scoped lang="scss">
+.tab {
+    &.highlight {
+        background-color: azure;
+    }
+    .tab-title-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
 }
 </style>
