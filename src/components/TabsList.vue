@@ -13,15 +13,7 @@
             </span>
 
             <b-icon
-                v-if="isSelected(tab)"
-                icon="star-fill"
-                @click.stop="toggleSelected(tab)"
-                class="h3"
-            >
-            </b-icon>
-            <b-icon
-                v-else
-                icon="star"
+                :icon="isSelected(tab) ? 'star-fill' : 'star'"
                 @click.stop="toggleSelected(tab)"
                 class="h3"
             >
