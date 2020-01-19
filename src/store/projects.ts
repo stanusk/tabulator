@@ -13,6 +13,7 @@ import {
     SET_PROJECTS,
 } from '@/store/mutation-types';
 import { PROJECTS } from '@/store/getter-types';
+import { packForStorage, unpackFromStorage } from '@/store/helpers/helpers';
 
 const state = {
     projects: [] as Project[],
@@ -20,21 +21,19 @@ const state = {
 
 const actions: ActionTree<ProjectsState, RootState> = {
     [DOWNLOAD_PROJECTS]({ commit }) {
-        return browser.storage.sync.get('projects').then(result => {
-            commit(SET_PROJECTS, JSON.parse(result.projects));
+        return browser.storage.sync.get().then(result => {
+            commit(SET_PROJECTS, unpackFromStorage(result));
         });
     },
     [UPLOAD_PROJECTS]({ state }) {
-        return browser.storage.sync.set({
-            projects: JSON.stringify(state.projects),
-        });
+        return browser.storage.sync.set(packForStorage(state.projects));
     },
     [ADD_PROJECT]({ commit, dispatch }, project: Project) {
         commit(ADD_PROJECT_MUTATION, project);
         dispatch(UPLOAD_PROJECTS);
     },
-    [REMOVE_PROJECT]({ commit, dispatch }, projects: Project[]) {
-        commit(REMOVE_PROJECT__MUTATION, projects);
+    [REMOVE_PROJECT]({ commit, dispatch }, project: Project) {
+        commit(REMOVE_PROJECT__MUTATION, project);
         dispatch(UPLOAD_PROJECTS);
     },
 };

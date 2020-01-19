@@ -1,5 +1,7 @@
 <template>
     <div>
+        <b-button @click="clear">Clear</b-button>
+        <b-button @click="check">Check</b-button>
         <CreateProject @create-project="onCreateProject"> </CreateProject>
         <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
             <TabsList
@@ -18,9 +20,9 @@
 import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
-import Tab = browser.tabs.Tab;
-import Window = browser.windows.Window;
 import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
+import { checkBytes, cleanWindow, clearStorage } from '@/store/helpers/helpers';
+import { TabClean, WindowClean } from '@/typings';
 
 @Component({
     components: {
@@ -29,23 +31,31 @@ import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
     },
 })
 export default class Tabs extends Vue {
-    bWindows: Window[] = [];
-    selectedTabs: Tab[] = [];
+    bWindows: WindowClean[] = [];
+    selectedTabs: TabClean[] = [];
+
+    // todo: remove clear & check
+    clear() {
+        clearStorage();
+    }
+    check() {
+        checkBytes();
+    }
 
     created() {
         browser.windows.getAll({ populate: true }).then(windows => {
-            this.bWindows = windows;
+            this.bWindows = windows.map(bWindow => cleanWindow(bWindow));
         });
 
         this.$store.dispatch(DOWNLOAD_PROJECTS);
     }
 
-    onToggleSelected(tab: Tab) {
-        const addTab = (addedTab: Tab) => {
+    onToggleSelected(tab: TabClean) {
+        const addTab = (addedTab: TabClean) => {
             return [...this.selectedTabs, addedTab];
         };
 
-        const removeTab = (removedTab: Tab) => {
+        const removeTab = (removedTab: TabClean) => {
             return this.selectedTabs.filter(t => t.id !== removedTab.id);
         };
 
@@ -58,7 +68,7 @@ export default class Tabs extends Vue {
         browser.tabs.update(tabId, { active: true });
     }
 
-    onCloseTab(closedTabsIds: number[], bWindow?: Window) {
+    onCloseTab(closedTabsIds: number[], bWindow?: WindowClean) {
         browser.tabs.remove(closedTabsIds).then(_ => {
             // remove closed tabs
             this.bWindows.forEach(bWindow => {
@@ -73,7 +83,7 @@ export default class Tabs extends Vue {
             } else {
                 this.bWindows = this.bWindows.reduce((all, current) => {
                     return current.tabs?.length ? [...all, current] : all;
-                }, [] as Window[]);
+                }, [] as WindowClean[]);
             }
         });
     }
