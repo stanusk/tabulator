@@ -4,10 +4,11 @@
             v-for="project in projects"
             v-bind:key="project.name"
             body-class="m-0 p-0"
-            v-b-toggle.collapse-1-inner
+            class="m-1"
         >
             <b-container
                 class="project-header d-flex justify-content-between align-items-center"
+                v-b-toggle="project.id"
             >
                 <p class="project-name card-text">{{ project.name }}</p>
                 <b-button variant="outline-primary" size="sm">
@@ -15,7 +16,7 @@
                     </b-icon>
                 </b-button>
             </b-container>
-            <b-collapse id="collapse-1-inner" class="tabs">
+            <b-collapse :id="project.id" class="tabs">
                 <b-list-group flush>
                     <b-list-group-item
                         class="m-1 p-1"
@@ -65,10 +66,10 @@ export default class Projects extends Vue {
 
 <style scoped lang="scss">
 .projects {
-    padding: 5px;
     .project-header {
         padding: 5px;
         background-color: azure;
+        cursor: pointer;
         .project-name {
             margin: auto 0;
             font-weight: bold;
