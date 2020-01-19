@@ -1,7 +1,7 @@
 import Tab = browser.tabs.Tab;
 import Window = browser.windows.Window;
 import { Project, ProjectsStorage, TabClean, WindowClean } from '@/typings';
-import { startsWith, uniqueId } from 'lodash-es';
+import { startsWith } from 'lodash-es';
 
 // clean url from suspender extension additions
 export const cleanUrl = (url: string) => {
@@ -28,13 +28,13 @@ export const cleanWindow = (window: Window): WindowClean => {
     };
 };
 
-export const packForStorage = (projects: Project[]): ProjectsStorage => {
-    return projects.reduce<ProjectsStorage>((projectsStorage, project) => {
-        return {
-            ...projectsStorage,
-            [uniqueId('proj_')]: project,
-        };
-    }, {});
+export const packForStorage = (project: Project): ProjectsStorage => {
+    return {
+        [project.id]: {
+            name: project.name,
+            tabs: project.tabs,
+        },
+    };
 };
 
 export const unpackFromStorage = (
@@ -44,7 +44,12 @@ export const unpackFromStorage = (
         startsWith(id, 'proj_')
     );
 
-    return ids.map(id => projectsStorage[id]);
+    return ids.map(id => {
+        return {
+            id,
+            ...projectsStorage[id],
+        };
+    });
 };
 
 ///////////////////////////////////////////////////////////////////////////////

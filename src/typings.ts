@@ -1,12 +1,13 @@
 import Tab = browser.tabs.Tab;
 
 export interface Project {
+    id: string;
     name: string;
     tabs: TabClean[];
 }
 
 export interface ProjectsStorage {
-    [id: string]: Project;
+    [id: string]: Omit<Project, 'id'>;
 }
 
 export type TabClean = Required<

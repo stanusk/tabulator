@@ -5,7 +5,6 @@ import {
     ADD_PROJECT,
     DOWNLOAD_PROJECTS,
     REMOVE_PROJECT,
-    UPLOAD_PROJECTS,
 } from '@/store/action-types';
 import {
     ADD_PROJECT as ADD_PROJECT_MUTATION,
@@ -25,16 +24,25 @@ const actions: ActionTree<ProjectsState, RootState> = {
             commit(SET_PROJECTS, unpackFromStorage(result));
         });
     },
-    [UPLOAD_PROJECTS]({ state }) {
-        return browser.storage.sync.set(packForStorage(state.projects));
+    [ADD_PROJECT]({ commit }, project: Project) {
+        return browser.storage.sync.set(packForStorage(project)).then(
+            _ => {
+                commit(ADD_PROJECT_MUTATION, project);
+            },
+            err => {
+                alert('project adding unsuccessful: ' + err.message);
+            }
+        );
     },
-    [ADD_PROJECT]({ commit, dispatch }, project: Project) {
-        commit(ADD_PROJECT_MUTATION, project);
-        dispatch(UPLOAD_PROJECTS);
-    },
-    [REMOVE_PROJECT]({ commit, dispatch }, project: Project) {
-        commit(REMOVE_PROJECT__MUTATION, project);
-        dispatch(UPLOAD_PROJECTS);
+    [REMOVE_PROJECT]({ commit }, project: Project) {
+        return browser.storage.sync.remove(project.id).then(
+            _ => {
+                commit(REMOVE_PROJECT__MUTATION, project);
+            },
+            err => {
+                alert('project removal unsuccessful: ' + err.message);
+            }
+        );
     },
 };
 

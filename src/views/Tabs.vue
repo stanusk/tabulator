@@ -23,6 +23,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
 import { checkBytes, cleanWindow, clearStorage } from '@/store/helpers/helpers';
 import { TabClean, WindowClean } from '@/typings';
+import { uniqueId } from 'lodash-es';
 
 @Component({
     components: {
@@ -96,6 +97,7 @@ export default class Tabs extends Vue {
 
     addNewProject(projectName: string) {
         const newProject = {
+            id: uniqueId('proj_'),
             name: projectName,
             tabs: this.selectedTabs,
         };
