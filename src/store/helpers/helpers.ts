@@ -52,10 +52,7 @@ export const unpackFromStorage = (
     });
 };
 
-///////////////////////////////////////////////////////////////////////////////
-////////// todo: remove or move ///////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-export const checkBytes = (keys?: string | string[]) => {
+export const logStorageSize = (keys?: string | string[]) => {
     if (browser.storage.sync.getBytesInUse) {
         browser.storage.sync
             .getBytesInUse(keys)

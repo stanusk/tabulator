@@ -1,7 +1,6 @@
 <template>
     <div>
-        <b-button @click="clear">Clear</b-button>
-        <b-button @click="check">Check</b-button>
+        <DevHelpers></DevHelpers>
         <CreateProject @create-project="onCreateProject"> </CreateProject>
         <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
             <TabsList
@@ -21,27 +20,21 @@ import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
-import { checkBytes, cleanWindow, clearStorage } from '@/store/helpers/helpers';
+import { cleanWindow } from '@/store/helpers/helpers';
 import { TabClean, WindowClean } from '@/typings';
 import { uniqueId } from 'lodash-es';
+import DevHelpers from '@/components/DevHelpers.vue';
 
 @Component({
     components: {
         TabsList,
         CreateProject,
+        DevHelpers,
     },
 })
 export default class Tabs extends Vue {
     bWindows: WindowClean[] = [];
     selectedTabs: TabClean[] = [];
-
-    // todo: remove clear & check
-    clear() {
-        clearStorage();
-    }
-    check() {
-        checkBytes();
-    }
 
     created() {
         browser.windows.getAll({ populate: true }).then(windows => {
