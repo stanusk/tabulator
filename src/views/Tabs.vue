@@ -19,11 +19,16 @@
 import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
-import { ADD_PROJECT, DOWNLOAD_PROJECTS } from '@/store/action-types';
-import { cleanWindow } from '@/store/helpers/helpers';
+import {
+    ADD_PROJECT,
+    DOWNLOAD_PROJECTS,
+    LOAD_WINDOWS,
+} from '@/store/action-types';
 import { TabClean, WindowClean } from '@/typings';
 import { uniqueId } from 'lodash-es';
 import DevHelpers from '@/components/DevHelpers.vue';
+import { Getter } from 'vuex-class';
+import { WINDOWS } from '@/store/getter-types';
 
 @Component({
     components: {
@@ -33,14 +38,13 @@ import DevHelpers from '@/components/DevHelpers.vue';
     },
 })
 export default class Tabs extends Vue {
-    bWindows: WindowClean[] = [];
+    @Getter(WINDOWS)
+    bWindows!: WindowClean[];
+
     selectedTabs: TabClean[] = [];
 
     created() {
-        browser.windows.getAll({ populate: true }).then(windows => {
-            this.bWindows = windows.map(bWindow => cleanWindow(bWindow));
-        });
-
+        this.$store.dispatch(LOAD_WINDOWS);
         this.$store.dispatch(DOWNLOAD_PROJECTS);
     }
 
