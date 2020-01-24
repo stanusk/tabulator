@@ -7,7 +7,7 @@ import {
     REMOVE_PROJECT,
 } from '@/store/action-types';
 import {
-    ADD_PROJECT as ADD_PROJECT_MUTATION,
+    ADD_PROJECT as ADD_PROJECT__MUTATION,
     REMOVE_PROJECT as REMOVE_PROJECT__MUTATION,
     SET_PROJECTS,
 } from '@/store/mutation-types';
@@ -27,7 +27,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
     [ADD_PROJECT]({ commit }, project: Project) {
         return browser.storage.sync.set(packForStorage(project)).then(
             _ => {
-                commit(ADD_PROJECT_MUTATION, project);
+                commit(ADD_PROJECT__MUTATION, project);
             },
             err => {
                 alert('project adding unsuccessful: ' + err.message);
@@ -50,7 +50,7 @@ const mutations: MutationTree<ProjectsState> = {
     [SET_PROJECTS](state: ProjectsState, projects: Project[]) {
         state.projects = projects;
     },
-    [ADD_PROJECT_MUTATION](state: ProjectsState, project: Project) {
+    [ADD_PROJECT__MUTATION](state: ProjectsState, project: Project) {
         state.projects = [...state.projects, project];
     },
     [REMOVE_PROJECT__MUTATION](state: ProjectsState, projectToRemove: Project) {
