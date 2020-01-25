@@ -1,12 +1,12 @@
 <template>
     <div>
         <DevHelpers></DevHelpers>
-        <CreateProject @create-project="onCreateProject"> </CreateProject>
+        <CreateProject @create-project="addNewProject"> </CreateProject>
         <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
             <TabsList
                 :tabs="bWindow.tabs"
                 :selectedTabs="selectedTabs"
-                @close-tab="onCloseTab($event, bWindow)"
+                @close-tab="onCloseTab($event)"
                 @activate-tab="onActivateTab"
                 @toggle-selected-tab="onToggleSelected"
             />
@@ -21,14 +21,17 @@ import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import {
     ADD_PROJECT,
+    CLOSE_TABS,
+    DESELECT_TAB,
     DOWNLOAD_PROJECTS,
     LOAD_WINDOWS,
+    SELECT_TAB,
 } from '@/store/action-types';
 import { TabClean, WindowClean } from '@/typings';
 import { uniqueId } from 'lodash-es';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
-import { WINDOWS } from '@/store/getter-types';
+import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
 
 @Component({
     components: {
@@ -41,7 +44,8 @@ export default class Tabs extends Vue {
     @Getter(WINDOWS)
     bWindows!: WindowClean[];
 
-    selectedTabs: TabClean[] = [];
+    @Getter(SELECTED_TABS)
+    selectedTabs!: TabClean[];
 
     created() {
         this.$store.dispatch(LOAD_WINDOWS);
@@ -49,51 +53,22 @@ export default class Tabs extends Vue {
     }
 
     onToggleSelected(tab: TabClean) {
-        const addTab = (addedTab: TabClean) => {
-            return [...this.selectedTabs, addedTab];
-        };
-
-        const removeTab = (removedTab: TabClean) => {
-            return this.selectedTabs.filter(t => t.id !== removedTab.id);
-        };
-
-        this.selectedTabs = this.selectedTabs.includes(tab)
-            ? removeTab(tab)
-            : addTab(tab);
+        this.selectedTabs.includes(tab)
+            ? this.$store.dispatch(DESELECT_TAB, tab.id)
+            : this.$store.dispatch(SELECT_TAB, tab);
     }
 
     onActivateTab(tabId: number) {
         browser.tabs.update(tabId, { active: true });
     }
 
-    onCloseTab(closedTabsIds: number[], bWindow?: WindowClean) {
-        browser.tabs.remove(closedTabsIds).then(_ => {
-            // remove closed tabs
-            this.bWindows.forEach(bWindow => {
-                bWindow.tabs = bWindow.tabs?.filter(
-                    tab => !closedTabsIds.includes(tab.id || 0)
-                );
-            });
-
-            // remove windows without tabs
-            if (bWindow && !bWindow.tabs?.length) {
-                this.bWindows = this.bWindows.filter(w => w.id !== bWindow.id);
-            } else {
-                this.bWindows = this.bWindows.reduce((all, current) => {
-                    return current.tabs?.length ? [...all, current] : all;
-                }, [] as WindowClean[]);
-            }
-        });
-    }
-
-    onCreateProject(projectName: string) {
-        this.addNewProject(projectName);
-        this.onCloseTab(this.selectedTabs.map(tab => tab.id || 0));
-        this.selectedTabs = [];
+    onCloseTab(closedTabsIds: number[]) {
+        this.$store.dispatch(CLOSE_TABS, closedTabsIds);
     }
 
     addNewProject(projectName: string) {
         const newProject = {
+            // todo: change id logic to prevent overwrite (add IDs as project counter to storage and keep incrementing)
             id: uniqueId('proj_'),
             name: projectName,
             tabs: this.selectedTabs,

@@ -3,6 +3,7 @@ import { ActionTree, GetterTree, Module, MutationTree } from 'vuex';
 import { RootState } from '@/store/index';
 import {
     ADD_PROJECT,
+    CLOSE_SELECTED_TABS,
     DOWNLOAD_PROJECTS,
     REMOVE_PROJECT,
 } from '@/store/action-types';
@@ -24,10 +25,12 @@ const actions: ActionTree<ProjectsState, RootState> = {
             commit(SET_PROJECTS, unpackFromStorage(result));
         });
     },
-    [ADD_PROJECT]({ commit }, project: Project) {
+    // todo: addProject should only need name and the rest should be done here
+    [ADD_PROJECT]({ commit, dispatch }, project: Project) {
         return browser.storage.sync.set(packForStorage(project)).then(
             _ => {
                 commit(ADD_PROJECT__MUTATION, project);
+                dispatch(CLOSE_SELECTED_TABS);
             },
             err => {
                 alert('project adding unsuccessful: ' + err.message);
