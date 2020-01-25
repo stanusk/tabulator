@@ -2,18 +2,19 @@ import { Project } from '@/typings';
 import { ActionTree, GetterTree, Module, MutationTree } from 'vuex';
 import { RootState } from '@/store/index';
 import {
-    ADD_PROJECT,
+    CREATE_PROJECT,
     CLOSE_SELECTED_TABS,
     DOWNLOAD_PROJECTS,
     REMOVE_PROJECT,
 } from '@/store/action-types';
 import {
-    ADD_PROJECT as ADD_PROJECT__MUTATION,
+    ADD_PROJECT,
     REMOVE_PROJECT as REMOVE_PROJECT__MUTATION,
     SET_PROJECTS,
 } from '@/store/mutation-types';
 import { PROJECTS } from '@/store/getter-types';
 import { packForStorage, unpackFromStorage } from '@/store/helpers/helpers';
+import { uniqueId } from 'lodash-es';
 
 const state = {
     projects: [] as Project[],
@@ -25,11 +26,17 @@ const actions: ActionTree<ProjectsState, RootState> = {
             commit(SET_PROJECTS, unpackFromStorage(result));
         });
     },
-    // todo: addProject should only need name and the rest should be done here
-    [ADD_PROJECT]({ commit, dispatch }, project: Project) {
-        return browser.storage.sync.set(packForStorage(project)).then(
+    [CREATE_PROJECT]({ commit, dispatch, rootState }, projectName: string) {
+        const newProject = {
+            // todo: change id logic to prevent overwrite (add IDs as project counter to storage and keep incrementing)
+            id: uniqueId('proj_'),
+            name: projectName,
+            tabs: rootState.windows.selectedTabs,
+        };
+
+        return browser.storage.sync.set(packForStorage(newProject)).then(
             _ => {
-                commit(ADD_PROJECT__MUTATION, project);
+                commit(ADD_PROJECT, newProject);
                 dispatch(CLOSE_SELECTED_TABS);
             },
             err => {
@@ -53,7 +60,7 @@ const mutations: MutationTree<ProjectsState> = {
     [SET_PROJECTS](state: ProjectsState, projects: Project[]) {
         state.projects = projects;
     },
-    [ADD_PROJECT__MUTATION](state: ProjectsState, project: Project) {
+    [ADD_PROJECT](state: ProjectsState, project: Project) {
         state.projects = [...state.projects, project];
     },
     [REMOVE_PROJECT__MUTATION](state: ProjectsState, projectToRemove: Project) {

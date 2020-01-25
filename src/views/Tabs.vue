@@ -1,7 +1,7 @@
 <template>
     <div>
         <DevHelpers></DevHelpers>
-        <CreateProject @create-project="addNewProject"> </CreateProject>
+        <CreateProject @create-project="onCreateProject"> </CreateProject>
         <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
             <TabsList
                 :tabs="bWindow.tabs"
@@ -20,13 +20,12 @@ import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import {
-    ADD_PROJECT,
+    CREATE_PROJECT,
     CLOSE_TABS,
     DOWNLOAD_PROJECTS,
     LOAD_WINDOWS,
 } from '@/store/action-types';
 import { TabClean, WindowClean } from '@/typings';
-import { uniqueId } from 'lodash-es';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
 import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
@@ -58,6 +57,7 @@ export default class Tabs extends Vue {
     }
 
     onActivateTab(tabId: number) {
+        // todo: move to store & try to activate also window
         browser.tabs.update(tabId, { active: true });
     }
 
@@ -65,14 +65,8 @@ export default class Tabs extends Vue {
         this.$store.dispatch(CLOSE_TABS, closedTabsIds);
     }
 
-    addNewProject(projectName: string) {
-        const newProject = {
-            // todo: change id logic to prevent overwrite (add IDs as project counter to storage and keep incrementing)
-            id: uniqueId('proj_'),
-            name: projectName,
-            tabs: this.selectedTabs,
-        };
-        this.$store.dispatch(ADD_PROJECT, newProject);
+    onCreateProject(projectName: string) {
+        this.$store.dispatch(CREATE_PROJECT, projectName);
     }
 }
 </script>

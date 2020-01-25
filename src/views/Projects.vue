@@ -42,6 +42,7 @@ export default class Projects extends Vue {
     @Getter(PROJECTS)
     projects!: Project[];
 
+    // todo: move to store
     revive(project: Project) {
         const urlsByWindowId = project.tabs.reduce((urls, tab) => {
             let urlsArray: string[] = urls[tab.windowId || 0];
