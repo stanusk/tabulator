@@ -4,7 +4,7 @@
             button
             v-for="tab of tabs"
             v-bind:key="tab.id"
-            @click="activateTab(tab.id)"
+            @click="activateTab(tab.id, tab.windowId)"
             class="tab d-flex justify-content-between align-items-center p-2"
             :class="{ highlight: tab.active }"
         >
@@ -42,8 +42,8 @@ export default class TabsList extends Vue {
     @Prop({ default: () => [] })
     selectedTabs!: Tab[];
 
-    activateTab(tabId: number) {
-        this.$emit('activate-tab', tabId);
+    activateTab(tabId: number, windowId: number) {
+        this.$emit('activate-tab', { tabId, windowId });
     }
 
     isSelected(tab: Tab) {

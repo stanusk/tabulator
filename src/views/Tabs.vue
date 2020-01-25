@@ -24,6 +24,7 @@ import {
     CLOSE_TABS,
     DOWNLOAD_PROJECTS,
     LOAD_WINDOWS,
+    ACTIVATE_TAB,
 } from '@/store/action-types';
 import { TabClean, WindowClean } from '@/typings';
 import DevHelpers from '@/components/DevHelpers.vue';
@@ -56,9 +57,8 @@ export default class Tabs extends Vue {
             : this.$store.commit(SELECT_TAB, tab);
     }
 
-    onActivateTab(tabId: number) {
-        // todo: move to store & try to activate also window
-        browser.tabs.update(tabId, { active: true });
+    onActivateTab({ tabId, windowId }: { tabId: number; windowId: number }) {
+        this.$store.dispatch(ACTIVATE_TAB, { tabId, windowId });
     }
 
     onCloseTab(closedTabsIds: number[]) {

@@ -2,6 +2,7 @@ import { TabClean, WindowClean } from '@/typings';
 import { ActionTree, GetterTree, Module, MutationTree } from 'vuex';
 import { RootState } from '@/store/index';
 import {
+    ACTIVATE_TAB,
     CLOSE_SELECTED_TABS,
     CLOSE_TABS,
     LOAD_WINDOWS,
@@ -61,6 +62,11 @@ const actions: ActionTree<WindowsState, RootState> = {
             state.selectedTabs.map(tab => tab.id)
         );
         commit(RESET_SELECTED_TABS);
+    },
+    [ACTIVATE_TAB]({ dispatch }, { tabId, windowId }) {
+        browser.tabs.update(tabId, { active: true });
+        browser.windows.update(windowId, { focused: true });
+        dispatch(LOAD_WINDOWS);
     },
 };
 

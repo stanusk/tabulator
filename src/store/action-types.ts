@@ -8,3 +8,4 @@ export const REVIVE_PROJECT = 'REVIVE_PROJECT';
 export const LOAD_WINDOWS = 'LOAD_WINDOWS';
 export const CLOSE_TABS = 'CLOSE_TABS';
 export const CLOSE_SELECTED_TABS = 'CLOSE_SELECTED_TABS';
+export const ACTIVATE_TAB = 'ACTIVATE_TAB';
