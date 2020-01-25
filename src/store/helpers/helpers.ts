@@ -28,7 +28,7 @@ export const cleanWindow = (window: Window): WindowClean => {
     };
 };
 
-export const packForStorage = (project: Project): ProjectsStorage => {
+export const packProjectForStorage = (project: Project): ProjectsStorage => {
     return {
         [project.id]: {
             name: project.name,
@@ -37,7 +37,7 @@ export const packForStorage = (project: Project): ProjectsStorage => {
     };
 };
 
-export const unpackFromStorage = (
+export const unpackProjectFromStorage = (
     projectsStorage: ProjectsStorage
 ): Project[] => {
     const ids = Object.keys(projectsStorage).filter(id =>

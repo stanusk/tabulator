@@ -11,11 +11,14 @@ import {
 import {
     ADD_PROJECT,
     REMOVE_PROJECT as REMOVE_PROJECT__MUTATION,
+    SET_LAST_PROJECT_ID,
     SET_PROJECTS,
 } from '@/store/mutation-types';
 import { PROJECTS } from '@/store/getter-types';
-import { packForStorage, unpackFromStorage } from '@/store/helpers/helpers';
-import { uniqueId } from 'lodash-es';
+import {
+    packProjectForStorage,
+    unpackProjectFromStorage,
+} from '@/store/helpers/helpers';
 
 const state = {
     projects: [] as Project[],
@@ -24,26 +27,42 @@ const state = {
 const actions: ActionTree<ProjectsState, RootState> = {
     [DOWNLOAD_PROJECTS]({ commit }) {
         return browser.storage.sync.get().then(result => {
-            commit(SET_PROJECTS, unpackFromStorage(result));
+            commit(SET_PROJECTS, unpackProjectFromStorage(result));
+            if (result?.extensionProps?.lastProjectId) {
+                commit(
+                    SET_LAST_PROJECT_ID,
+                    result.extensionProps.lastProjectId
+                );
+            }
         });
     },
     [CREATE_PROJECT]({ commit, dispatch, rootState }, projectName: string) {
+        const newProjectId = rootState.extensionProps.lastProjectId + 1;
+
         const newProject = {
-            // todo: change id logic to prevent overwrite (add IDs as project counter to storage and keep incrementing)
-            id: uniqueId('proj_'),
+            id: 'proj_' + newProjectId,
             name: projectName,
             tabs: rootState.windows.selectedTabs,
         };
 
-        return browser.storage.sync.set(packForStorage(newProject)).then(
-            _ => {
-                commit(ADD_PROJECT, newProject);
-                dispatch(CLOSE_SELECTED_TABS);
-            },
-            err => {
-                alert('project adding failed: ' + err.message);
-            }
-        );
+        return browser.storage.sync
+            .set({
+                ...packProjectForStorage(newProject),
+                extensionProps: {
+                    ...rootState.extensionProps,
+                    lastProjectId: newProjectId,
+                },
+            })
+            .then(
+                _ => {
+                    commit(ADD_PROJECT, newProject);
+                    dispatch(CLOSE_SELECTED_TABS);
+                    commit(SET_LAST_PROJECT_ID, newProjectId);
+                },
+                err => {
+                    alert('project adding failed: ' + err.message);
+                }
+            );
     },
     [REVIVE_PROJECT]({ dispatch }, project: Project) {
         const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
