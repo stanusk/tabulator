@@ -14,7 +14,7 @@
 
             <b-icon
                 :icon="isSelected(tab) ? 'star-fill' : 'star'"
-                @click.stop="toggleSelected(tab)"
+                @click.stop="toggleSelected(tab, isSelected(tab))"
                 class="h3"
             >
             </b-icon>
@@ -50,8 +50,8 @@ export default class TabsList extends Vue {
         return this.selectedTabs.includes(tab);
     }
 
-    toggleSelected(tab: Tab) {
-        this.$emit('toggle-selected-tab', tab);
+    toggleSelected(tab: Tab, isSelected: boolean) {
+        this.$emit('toggle-selected-tab', { tab, isSelected });
     }
 
     closeTab(tabId: number) {

@@ -51,8 +51,14 @@ export default class Tabs extends Vue {
         this.$store.dispatch(DOWNLOAD_PROJECTS);
     }
 
-    onToggleSelected(tab: TabClean) {
-        this.selectedTabs.includes(tab)
+    onToggleSelected({
+        tab,
+        isSelected,
+    }: {
+        tab: TabClean;
+        isSelected: boolean;
+    }) {
+        isSelected
             ? this.$store.commit(DESELECT_TAB, tab.id)
             : this.$store.commit(SELECT_TAB, tab);
     }
