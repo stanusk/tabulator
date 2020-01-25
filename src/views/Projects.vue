@@ -35,32 +35,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Project } from '@/typings';
 import { Getter } from 'vuex-class';
 import { PROJECTS } from '@/store/getter-types';
-import { REMOVE_PROJECT } from '@/store/action-types';
+import { REVIVE_PROJECT } from '@/store/action-types';
 
 @Component
 export default class Projects extends Vue {
     @Getter(PROJECTS)
     projects!: Project[];
 
-    // todo: move to store
     revive(project: Project) {
-        const urlsByWindowId = project.tabs.reduce((urls, tab) => {
-            let urlsArray: string[] = urls[tab.windowId || 0];
-            if (urlsArray) {
-                urls[tab.windowId || 0] = [...urlsArray, tab.url || ''];
-            } else {
-                urls[tab.windowId || 0] = [tab.url || ''];
-            }
-
-            return urls;
-        }, {} as { [windowId: number]: string[] });
-
-        Object.values(urlsByWindowId).forEach(urls => {
-            browser.windows.create({ url: urls });
-        });
-
-        // todo: remove only if success
-        this.$store.dispatch(REMOVE_PROJECT, project);
+        this.$store.dispatch(REVIVE_PROJECT, project);
     }
 }
 </script>

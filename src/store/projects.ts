@@ -6,6 +6,7 @@ import {
     CLOSE_SELECTED_TABS,
     DOWNLOAD_PROJECTS,
     REMOVE_PROJECT,
+    REVIVE_PROJECT,
 } from '@/store/action-types';
 import {
     ADD_PROJECT,
@@ -40,7 +41,33 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 dispatch(CLOSE_SELECTED_TABS);
             },
             err => {
-                alert('project adding unsuccessful: ' + err.message);
+                alert('project adding failed: ' + err.message);
+            }
+        );
+    },
+    [REVIVE_PROJECT]({ dispatch }, project: Project) {
+        const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
+            if (!urlsDict.hasOwnProperty(tab.windowId)) {
+                urlsDict[tab.windowId] = [tab.url];
+            } else {
+                urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];
+            }
+
+            return urlsDict;
+        }, {} as { [windowId: number]: string[] });
+
+        const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
+            urls => {
+                return browser.windows.create({ url: urls });
+            }
+        );
+
+        Promise.all(windowsCreatePromises).then(
+            _ => {
+                dispatch(REMOVE_PROJECT, project);
+            },
+            err => {
+                alert('opening tabs failed: ' + err.message);
             }
         );
     },
@@ -50,7 +77,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 commit(REMOVE_PROJECT__MUTATION, project);
             },
             err => {
-                alert('project removal unsuccessful: ' + err.message);
+                alert('project removal failed: ' + err.message);
             }
         );
     },

@@ -2,6 +2,7 @@
 export const DOWNLOAD_PROJECTS = 'DOWNLOAD_PROJECTS';
 export const CREATE_PROJECT = 'CREATE_PROJECT';
 export const REMOVE_PROJECT = 'REMOVE_PROJECT';
+export const REVIVE_PROJECT = 'REVIVE_PROJECT';
 
 // windows actions
 export const LOAD_WINDOWS = 'LOAD_WINDOWS';

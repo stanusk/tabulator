@@ -48,7 +48,7 @@ const actions: ActionTree<WindowsState, RootState> = {
             },
             err => {
                 alert(
-                    'closing tabs unsuccessful:: ' +
+                    'closing tabs failed: ' +
                         err.message +
                         ' Please reopen the extension'
                 );
