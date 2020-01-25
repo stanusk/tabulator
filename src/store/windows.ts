@@ -4,13 +4,11 @@ import { RootState } from '@/store/index';
 import {
     CLOSE_SELECTED_TABS,
     CLOSE_TABS,
-    DESELECT_TAB,
     LOAD_WINDOWS,
-    SELECT_TAB,
 } from '@/store/action-types';
 import {
-    SELECT_TAB as SELECT_TAB__MUTATION,
-    DESELECT_TAB as DESELECT_TAB__MUTATION,
+    SELECT_TAB,
+    DESELECT_TAB,
     RESET_SELECTED_TABS,
     SET_WINDOWS,
 } from '@/store/mutation-types';
@@ -30,12 +28,6 @@ const actions: ActionTree<WindowsState, RootState> = {
                 windows.map(bWindow => cleanWindow(bWindow))
             );
         });
-    },
-    [SELECT_TAB]({ commit }, tab: TabClean) {
-        commit(SELECT_TAB__MUTATION, tab);
-    },
-    [DESELECT_TAB]({ commit }, tabId: number) {
-        commit(DESELECT_TAB__MUTATION, tabId);
     },
     [CLOSE_TABS]({ commit, state }, closedTabsIds: number[]) {
         browser.tabs.remove(closedTabsIds).then(
@@ -76,10 +68,10 @@ const mutations: MutationTree<WindowsState> = {
     [SET_WINDOWS](state: WindowsState, windows: WindowClean[]) {
         state.windows = windows;
     },
-    [SELECT_TAB__MUTATION](state: WindowsState, tab: TabClean) {
+    [SELECT_TAB](state: WindowsState, tab: TabClean) {
         state.selectedTabs = [...state.selectedTabs, tab];
     },
-    [DESELECT_TAB__MUTATION](state: WindowsState, tabId: number) {
+    [DESELECT_TAB](state: WindowsState, tabId: number) {
         state.selectedTabs = state.selectedTabs.filter(t => t.id !== tabId);
     },
     [RESET_SELECTED_TABS](state: WindowsState) {

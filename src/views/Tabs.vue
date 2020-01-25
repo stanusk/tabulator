@@ -22,16 +22,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import {
     ADD_PROJECT,
     CLOSE_TABS,
-    DESELECT_TAB,
     DOWNLOAD_PROJECTS,
     LOAD_WINDOWS,
-    SELECT_TAB,
 } from '@/store/action-types';
 import { TabClean, WindowClean } from '@/typings';
 import { uniqueId } from 'lodash-es';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
 import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
+import { DESELECT_TAB, SELECT_TAB } from '@/store/mutation-types';
 
 @Component({
     components: {
@@ -54,8 +53,8 @@ export default class Tabs extends Vue {
 
     onToggleSelected(tab: TabClean) {
         this.selectedTabs.includes(tab)
-            ? this.$store.dispatch(DESELECT_TAB, tab.id)
-            : this.$store.dispatch(SELECT_TAB, tab);
+            ? this.$store.commit(DESELECT_TAB, tab.id)
+            : this.$store.commit(SELECT_TAB, tab);
     }
 
     onActivateTab(tabId: number) {
