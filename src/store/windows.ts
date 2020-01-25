@@ -2,7 +2,6 @@ import { TabClean, WindowClean } from '@/typings';
 import { ActionTree, GetterTree, Module, MutationTree } from 'vuex';
 import { RootState } from '@/store/index';
 import {
-    RESET_SELECTED_TABS,
     CLOSE_SELECTED_TABS,
     CLOSE_TABS,
     DESELECT_TAB,
@@ -12,7 +11,7 @@ import {
 import {
     SELECT_TAB as SELECT_TAB__MUTATION,
     DESELECT_TAB as DESELECT_TAB__MUTATION,
-    RESET_SELECTED_TABS as RESET_SELECTED_TABS__MUTATION,
+    RESET_SELECTED_TABS,
     SET_WINDOWS,
 } from '@/store/mutation-types';
 import { cleanWindow } from '@/store/helpers/helpers';
@@ -64,16 +63,12 @@ const actions: ActionTree<WindowsState, RootState> = {
             }
         );
     },
-    [CLOSE_SELECTED_TABS]({ dispatch, state }) {
+    [CLOSE_SELECTED_TABS]({ dispatch, state, commit }) {
         dispatch(
             CLOSE_TABS,
             state.selectedTabs.map(tab => tab.id)
         );
-        dispatch(RESET_SELECTED_TABS);
-    },
-    // todo: remove unnecessary mutations
-    [RESET_SELECTED_TABS]({ commit }) {
-        commit(RESET_SELECTED_TABS__MUTATION);
+        commit(RESET_SELECTED_TABS);
     },
 };
 
@@ -87,7 +82,7 @@ const mutations: MutationTree<WindowsState> = {
     [DESELECT_TAB__MUTATION](state: WindowsState, tabId: number) {
         state.selectedTabs = state.selectedTabs.filter(t => t.id !== tabId);
     },
-    [RESET_SELECTED_TABS__MUTATION](state: WindowsState) {
+    [RESET_SELECTED_TABS](state: WindowsState) {
         state.selectedTabs = [];
     },
 };
