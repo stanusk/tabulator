@@ -30,11 +30,16 @@ import {
     LOAD_WINDOWS,
     ACTIVATE_TAB,
 } from '@/store/action-types';
-import { TabClean, WindowClean } from '@/typings';
+import { TabClean, TabSelectionModifiers, WindowClean } from '@/typings';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
 import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
-import { DESELECT_TAB, SELECT_TAB } from '@/store/mutation-types';
+import {
+    DESELECT_ALL_WINDOW_TABS,
+    DESELECT_TAB,
+    SELECT_ALL_WINDOW_TABS,
+    SELECT_TAB,
+} from '@/store/mutation-types';
 
 @Component({
     components: {
@@ -58,13 +63,33 @@ export default class Tabs extends Vue {
     onToggleSelected({
         tab,
         isSelected,
+        modifiers,
     }: {
         tab: TabClean;
         isSelected: boolean;
+        modifiers: TabSelectionModifiers;
     }) {
-        isSelected
-            ? this.$store.commit(DESELECT_TAB, tab.id)
-            : this.$store.commit(SELECT_TAB, tab);
+        if (!isSelected) {
+            switch (true) {
+                case modifiers.altKey: {
+                    this.$store.commit(SELECT_ALL_WINDOW_TABS, tab.windowId);
+                    break;
+                }
+                default: {
+                    this.$store.commit(SELECT_TAB, tab);
+                }
+            }
+        } else {
+            switch (true) {
+                case modifiers.altKey: {
+                    this.$store.commit(DESELECT_ALL_WINDOW_TABS, tab.windowId);
+                    break;
+                }
+                default: {
+                    this.$store.commit(DESELECT_TAB, tab.id);
+                }
+            }
+        }
     }
 
     onActivateTab({ tabId, windowId }: { tabId: number; windowId: number }) {

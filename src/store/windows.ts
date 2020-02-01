@@ -12,9 +12,12 @@ import {
     DESELECT_TAB,
     RESET_SELECTED_TABS,
     SET_WINDOWS,
+    SELECT_ALL_WINDOW_TABS,
+    DESELECT_ALL_WINDOW_TABS,
 } from '@/store/mutation-types';
 import { cleanWindow } from '@/store/helpers/helpers';
 import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
+import { uniqBy } from 'lodash-es';
 
 const state = {
     windows: [] as WindowClean[],
@@ -77,8 +80,22 @@ const mutations: MutationTree<WindowsState> = {
     [SELECT_TAB](state: WindowsState, tab: TabClean) {
         state.selectedTabs = [...state.selectedTabs, tab];
     },
+    [SELECT_ALL_WINDOW_TABS](state: WindowsState, windowId: number) {
+        const targetWindow = state.windows.find(w => w.id === windowId);
+        if (targetWindow) {
+            state.selectedTabs = uniqBy(
+                [...state.selectedTabs, ...targetWindow.tabs],
+                'id'
+            );
+        }
+    },
     [DESELECT_TAB](state: WindowsState, tabId: number) {
         state.selectedTabs = state.selectedTabs.filter(t => t.id !== tabId);
+    },
+    [DESELECT_ALL_WINDOW_TABS](state: WindowsState, windowId: number) {
+        state.selectedTabs = state.selectedTabs.filter(
+            t => t.windowId !== windowId
+        );
     },
     [RESET_SELECTED_TABS](state: WindowsState) {
         state.selectedTabs = [];

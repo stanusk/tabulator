@@ -14,7 +14,7 @@
 
             <b-icon
                 :icon="isSelected(tab) ? 'star-fill' : 'star'"
-                @click.stop="toggleSelected(tab, isSelected(tab))"
+                @click.stop="toggleSelected(tab, isSelected(tab), $event)"
                 class="h3"
             >
             </b-icon>
@@ -33,6 +33,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TabClean } from '@/typings';
+import { pick } from 'lodash-es';
 
 @Component
 export default class TabsList extends Vue {
@@ -50,8 +51,14 @@ export default class TabsList extends Vue {
         return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
     }
 
-    toggleSelected(tab: TabClean, isSelected: boolean) {
-        this.$emit('toggle-selected-tab', { tab, isSelected });
+    toggleSelected(tab: TabClean, isSelected: boolean, event: MouseEvent) {
+        const modifiers = pick(event, [
+            'ctrlKey',
+            'shiftKey',
+            'altKey',
+            'metaKey',
+        ]);
+        this.$emit('toggle-selected-tab', { tab, isSelected, modifiers });
     }
 
     closeTab(tabId: number) {

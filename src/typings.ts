@@ -18,3 +18,10 @@ export interface WindowClean {
     id: number;
     tabs: TabClean[];
 }
+
+export interface TabSelectionModifiers {
+    ctrlKey: boolean;
+    altKey: boolean;
+    shiftKey: boolean;
+    metaKey: boolean;
+}
