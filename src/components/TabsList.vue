@@ -32,25 +32,25 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import Tab = browser.tabs.Tab;
+import { TabClean } from '@/typings';
 
 @Component
 export default class TabsList extends Vue {
     @Prop({ default: () => [] })
-    tabs!: Tab[];
+    tabs!: TabClean[];
 
     @Prop({ default: () => [] })
-    selectedTabs!: Tab[];
+    selectedTabs!: TabClean[];
 
     activateTab(tabId: number, windowId: number) {
         this.$emit('activate-tab', { tabId, windowId });
     }
 
-    isSelected(tab: Tab) {
+    isSelected(tab: TabClean) {
         return this.selectedTabs.includes(tab);
     }
 
-    toggleSelected(tab: Tab, isSelected: boolean) {
+    toggleSelected(tab: TabClean, isSelected: boolean) {
         this.$emit('toggle-selected-tab', { tab, isSelected });
     }
 
