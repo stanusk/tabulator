@@ -7,17 +7,24 @@
         >
         </b-form-input>
 
-        <b-button @click="createProject(projectName)" variant="outline-primary">
+        <b-button
+            @click="createProject(projectName)"
+            variant="outline-primary"
+            :disabled="disabled"
+        >
             <b-icon icon="cloud-upload"> </b-icon>
         </b-button>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class CreateProject extends Vue {
+    @Prop()
+    disabled!: boolean;
+
     projectName: string = '';
     createProject(projectName: string) {
         this.$emit('create-project', projectName);
