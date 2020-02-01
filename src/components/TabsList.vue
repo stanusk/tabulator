@@ -47,7 +47,7 @@ export default class TabsList extends Vue {
     }
 
     isSelected(tab: TabClean) {
-        return this.selectedTabs.includes(tab);
+        return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
     }
 
     toggleSelected(tab: TabClean, isSelected: boolean) {
