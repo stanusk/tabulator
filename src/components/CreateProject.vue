@@ -3,7 +3,7 @@
         <b-form-input
             class="project-name"
             v-model="projectName"
-            placeholder="Enter project name"
+            placeholder="Project name"
         >
         </b-form-input>
 
