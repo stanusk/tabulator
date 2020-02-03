@@ -18,16 +18,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class CreateProject extends Vue {
     @Prop()
     disabled!: boolean;
 
+    @Emit('create-project')
+    emitCreateProject(projectName: string) {
+        return projectName;
+    }
+
     projectName: string = '';
+
     createProject(projectName: string) {
-        this.$emit('create-project', projectName);
+        this.emitCreateProject(projectName);
         this.projectName = '';
     }
 }

@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import { TabClean } from '@/typings';
 import { pick } from 'lodash-es';
 
@@ -49,14 +49,12 @@ export default class TabsList extends Vue {
     @Prop({ default: () => [] })
     selectedTabs!: TabClean[];
 
+    @Emit('activate-tab')
     activateTab(tabId: number, windowId: number) {
-        this.$emit('activate-tab', { tabId, windowId });
+        return { tabId, windowId };
     }
 
-    isSelected(tab: TabClean) {
-        return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
-    }
-
+    @Emit('toggle-selected-tab')
     toggleSelected(tab: TabClean, isSelected: boolean, event: MouseEvent) {
         const modifiers = pick(event, [
             'ctrlKey',
@@ -64,11 +62,16 @@ export default class TabsList extends Vue {
             'altKey',
             'metaKey',
         ]);
-        this.$emit('toggle-selected-tab', { tab, isSelected, modifiers });
+        return { tab, isSelected, modifiers };
     }
 
+    @Emit('close-tab')
     closeTab(tabId: number) {
-        this.$emit('close-tab', [tabId]);
+        return [tabId];
+    }
+
+    isSelected(tab: TabClean) {
+        return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
     }
 
     // get defaultText() {
