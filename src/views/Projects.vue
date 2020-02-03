@@ -1,7 +1,7 @@
 <template>
     <div class="projects">
         <b-card
-            v-for="project in projects"
+            v-for="project in projectsSorted"
             v-bind:key="project.name"
             body-class="m-0 p-0"
             class="m-1"
@@ -45,6 +45,10 @@ import { REVIVE_PROJECT } from '@/store/action-types';
 export default class Projects extends Vue {
     @Getter(PROJECTS)
     projects!: Project[];
+
+    get projectsSorted() {
+        return this.projects.sort((a, b) => b.id - a.id);
+    }
 
     revive(project: Project) {
         this.$store.dispatch(REVIVE_PROJECT, project);
