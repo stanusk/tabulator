@@ -1,6 +1,6 @@
 <template>
     <div>
-        <DevHelpers></DevHelpers>
+        <!--<DevHelpers></DevHelpers>-->
         <CreateProject
             :disabled="selectedTabs.length === 0"
             :projectName="newProjectName"
