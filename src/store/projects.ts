@@ -16,6 +16,7 @@ import {
 } from '@/store/mutation-types';
 import { PROJECTS } from '@/store/getter-types';
 import {
+    makeStorageProjectId,
     packProjectForStorage,
     unpackProjectFromStorage,
 } from '@/store/helpers/helpers';
@@ -40,7 +41,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
         const newProjectId = rootState.extensionProps.lastProjectId + 1;
 
         const newProject = {
-            id: 'proj_' + newProjectId,
+            id: newProjectId,
             name: projectName,
             tabs: rootState.windows.selectedTabs,
         };
@@ -91,14 +92,16 @@ const actions: ActionTree<ProjectsState, RootState> = {
         );
     },
     [REMOVE_PROJECT]({ commit }, project: Project) {
-        return browser.storage.sync.remove(project.id).then(
-            _ => {
-                commit(REMOVE_PROJECT__MUTATION, project);
-            },
-            err => {
-                alert('project removal failed: ' + err.message);
-            }
-        );
+        return browser.storage.sync
+            .remove(makeStorageProjectId(project.id))
+            .then(
+                _ => {
+                    commit(REMOVE_PROJECT__MUTATION, project);
+                },
+                err => {
+                    alert('project removal failed: ' + err.message);
+                }
+            );
     },
 };
 
@@ -111,7 +114,7 @@ const mutations: MutationTree<ProjectsState> = {
     },
     [REMOVE_PROJECT__MUTATION](state: ProjectsState, projectToRemove: Project) {
         state.projects = state.projects.filter(
-            project => project.name !== projectToRemove.name
+            project => project.id !== projectToRemove.id
         );
     },
 };

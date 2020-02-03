@@ -30,7 +30,7 @@ export const cleanWindow = (window: Window): WindowClean => {
 
 export const packProjectForStorage = (project: Project): ProjectsStorage => {
     return {
-        [project.id]: {
+        [makeStorageProjectId(project.id)]: {
             name: project.name,
             tabs: project.tabs,
         },
@@ -40,16 +40,24 @@ export const packProjectForStorage = (project: Project): ProjectsStorage => {
 export const unpackProjectFromStorage = (
     projectsStorage: ProjectsStorage
 ): Project[] => {
-    const ids = Object.keys(projectsStorage).filter(id =>
-        startsWith(id, 'proj_')
-    );
+    const ids = Object.keys(projectsStorage).filter(id => startsWith(id, 'p_'));
 
     return ids.map(id => {
         return {
-            id,
+            id: makeProjectIdFromStorage(id),
             ...projectsStorage[id],
         };
     });
+};
+
+export const makeStorageProjectId = (projectId: number): string => {
+    return 'p_' + projectId;
+};
+
+export const makeProjectIdFromStorage = (storageProjectId: string): number => {
+    // from 'p_123' turn into 123
+    // todo: consider optimizing with regex
+    return +storageProjectId.split('_')[1];
 };
 
 export const logStorageSize = (keys?: string | string[]) => {
