@@ -2,6 +2,8 @@
 export const SET_PROJECTS = 'SET_PROJECTS';
 export const ADD_PROJECT = 'ADD_PROJECT';
 export const REMOVE_PROJECT = 'REMOVE_PROJECT';
+export const SET_NEW_PROJECT_NAME = 'SET_NEW_PROJECT_NAME';
+export const RESET_NEW_PROJECT_NAME = 'RESET_NEW_PROJECT_NAME';
 
 // windows
 export const SET_WINDOWS = 'SET_WINDOWS';

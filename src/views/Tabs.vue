@@ -2,8 +2,10 @@
     <div>
         <DevHelpers></DevHelpers>
         <CreateProject
-            @create-project="onCreateProject"
             :disabled="selectedTabs.length === 0"
+            :projectName="newProjectName"
+            @update-project-name="onUpdateProjectName"
+            @create-project="onCreateProject"
         >
         </CreateProject>
         <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
@@ -33,12 +35,13 @@ import {
 import { TabClean, TabSelectionModifiers, WindowClean } from '@/typings';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
-import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
+import { NEW_PROJECT_NAME, SELECTED_TABS, WINDOWS } from '@/store/getter-types';
 import {
     DESELECT_ALL_WINDOW_TABS,
     DESELECT_TAB,
     SELECT_ALL_WINDOW_TABS,
     SELECT_TAB,
+    SET_NEW_PROJECT_NAME,
 } from '@/store/mutation-types';
 
 @Component({
@@ -54,6 +57,9 @@ export default class Tabs extends Vue {
 
     @Getter(SELECTED_TABS)
     selectedTabs!: TabClean[];
+
+    @Getter(NEW_PROJECT_NAME)
+    newProjectName!: string;
 
     created() {
         this.$store.dispatch(LOAD_WINDOWS);
@@ -100,8 +106,12 @@ export default class Tabs extends Vue {
         this.$store.dispatch(CLOSE_TABS, closedTabsIds);
     }
 
-    onCreateProject(projectName: string) {
-        this.$store.dispatch(CREATE_PROJECT, projectName);
+    onCreateProject() {
+        this.$store.dispatch(CREATE_PROJECT);
+    }
+
+    onUpdateProjectName(updatedName: string) {
+        this.$store.commit(SET_NEW_PROJECT_NAME, updatedName);
     }
 }
 </script>

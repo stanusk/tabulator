@@ -2,13 +2,15 @@
     <div class="create-project">
         <b-form-input
             class="project-name"
-            v-model="projectName"
+            :value="projectName"
+            @blur="updateProjectName($event)"
             placeholder="Project name"
+            :autofocus="true"
         >
         </b-form-input>
 
         <b-button
-            @click="createProject(projectName)"
+            @click="createProject()"
             variant="primary"
             :disabled="disabled"
         >
@@ -22,19 +24,18 @@ import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class CreateProject extends Vue {
-    @Prop()
+    @Prop({ default: false })
     disabled!: boolean;
 
+    @Prop({ default: '' })
+    projectName!: string;
+
     @Emit('create-project')
-    emitCreateProject(projectName: string) {
-        return projectName;
-    }
+    createProject() {}
 
-    projectName: string = '';
-
-    createProject(projectName: string) {
-        this.emitCreateProject(projectName);
-        this.projectName = '';
+    @Emit('update-project-name')
+    updateProjectName(event: FocusEvent) {
+        return (event.target as HTMLInputElement).value;
     }
 }
 </script>

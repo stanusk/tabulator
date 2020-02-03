@@ -13,8 +13,10 @@ import {
     REMOVE_PROJECT as REMOVE_PROJECT__MUTATION,
     SET_LAST_PROJECT_ID,
     SET_PROJECTS,
+    SET_NEW_PROJECT_NAME,
+    RESET_NEW_PROJECT_NAME,
 } from '@/store/mutation-types';
-import { PROJECTS } from '@/store/getter-types';
+import { NEW_PROJECT_NAME, PROJECTS } from '@/store/getter-types';
 import {
     makeStorageProjectId,
     packProjectForStorage,
@@ -23,6 +25,7 @@ import {
 
 const state = {
     projects: [] as Project[],
+    newProjectName: '',
 };
 
 const actions: ActionTree<ProjectsState, RootState> = {
@@ -37,12 +40,12 @@ const actions: ActionTree<ProjectsState, RootState> = {
             }
         });
     },
-    [CREATE_PROJECT]({ commit, dispatch, rootState }, projectName: string) {
+    [CREATE_PROJECT]({ commit, dispatch, rootState, state }) {
         const newProjectId = rootState.extensionProps.lastProjectId + 1;
 
         const newProject = {
             id: newProjectId,
-            name: projectName,
+            name: state.newProjectName,
             tabs: rootState.windows.selectedTabs,
         };
 
@@ -57,6 +60,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
             .then(
                 _ => {
                     commit(ADD_PROJECT, newProject);
+                    commit(RESET_NEW_PROJECT_NAME);
                     dispatch(CLOSE_SELECTED_TABS);
                     commit(SET_LAST_PROJECT_ID, newProjectId);
                 },
@@ -117,11 +121,20 @@ const mutations: MutationTree<ProjectsState> = {
             project => project.id !== projectToRemove.id
         );
     },
+    [SET_NEW_PROJECT_NAME](state, newName: string) {
+        state.newProjectName = newName;
+    },
+    [RESET_NEW_PROJECT_NAME](state) {
+        state.newProjectName = '';
+    },
 };
 
 const getters: GetterTree<ProjectsState, RootState> = {
     [PROJECTS](state: ProjectsState) {
         return state.projects;
+    },
+    [NEW_PROJECT_NAME](state: ProjectsState) {
+        return state.newProjectName;
     },
 };
 
