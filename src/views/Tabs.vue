@@ -1,6 +1,6 @@
 <template>
     <div>
-        <DevHelpers></DevHelpers>
+        <!--        <DevHelpers></DevHelpers>-->
         <CreateProject
             @create-project="onCreateProject"
             :disabled="selectedTabs.length === 0"

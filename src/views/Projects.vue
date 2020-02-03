@@ -11,9 +11,12 @@
                 v-b-toggle="project.id"
             >
                 <p class="project-name card-text">{{ project.name }}</p>
-                <b-button variant="outline-primary" size="sm">
-                    <b-icon icon="box-arrow-up-right" @click="revive(project)">
-                    </b-icon>
+                <b-button
+                    @click="revive(project)"
+                    variant="outline-primary"
+                    size="sm"
+                >
+                    <b-icon icon="box-arrow-up-right"> </b-icon>
                 </b-button>
             </b-container>
             <b-collapse :id="project.id" class="tabs">
@@ -22,8 +25,9 @@
                         class="m-1 p-1"
                         v-for="tab in project.tabs"
                         v-bind:key="tab.id"
-                        >{{ tab.title }}</b-list-group-item
                     >
+                        {{ tab.title }}
+                    </b-list-group-item>
                 </b-list-group>
             </b-collapse>
         </b-card>

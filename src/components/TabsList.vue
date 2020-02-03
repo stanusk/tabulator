@@ -4,28 +4,34 @@
             button
             v-for="tab of tabs"
             v-bind:key="tab.id"
-            @click="activateTab(tab.id, tab.windowId)"
+            @click="toggleSelected(tab, isSelected(tab), $event)"
             class="tab d-flex justify-content-between align-items-center p-2"
             :class="{ highlight: tab.active }"
         >
-            <span class="tab-title-text">
+            <span
+                @click="activateTab(tab.id, tab.windowId)"
+                class="tab-title-text"
+            >
                 {{ tab.title }}
             </span>
 
-            <b-icon
-                :icon="isSelected(tab) ? 'star-fill' : 'star'"
-                @click.stop="toggleSelected(tab, isSelected(tab), $event)"
-                class="h3"
-            >
-            </b-icon>
+            <div>
+                <b-icon
+                    :icon="isSelected(tab) ? 'star-fill' : 'star'"
+                    variant="primary"
+                    @click.stop="toggleSelected(tab, isSelected(tab), $event)"
+                    class="h3 m-0"
+                >
+                </b-icon>
 
-            <b-icon
-                icon="x-square-fill"
-                variant="dark"
-                @click.stop="closeTab(tab.id)"
-                class="h3"
-            >
-            </b-icon>
+                <b-icon
+                    icon="x"
+                    variant="danger"
+                    @click.stop="closeTab(tab.id)"
+                    class="h3 m-0"
+                >
+                </b-icon>
+            </div>
         </b-list-group-item>
     </b-list-group>
 </template>
@@ -80,7 +86,11 @@ export default class TabsList extends Vue {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 200px;
+        max-width: 250px;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
 }
 </style>

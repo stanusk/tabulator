@@ -9,10 +9,10 @@
 
         <b-button
             @click="createProject(projectName)"
-            variant="outline-primary"
+            variant="primary"
             :disabled="disabled"
         >
-            <b-icon icon="cloud-upload"> </b-icon>
+            <b-icon icon="archive-fill"> </b-icon>
         </b-button>
     </div>
 </template>
