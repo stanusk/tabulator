@@ -2,10 +2,11 @@
     <div class="create-project">
         <b-form-input
             class="project-name"
-            :value="projectName"
-            @blur="updateProjectName($event)"
             placeholder="Project name"
+            :value="projectName"
             :autofocus="true"
+            @input="updateProjectName($event)"
+            @keyup.enter="createProjectUnlessDisabled()"
         >
         </b-form-input>
 
@@ -34,8 +35,14 @@ export default class CreateProject extends Vue {
     createProject() {}
 
     @Emit('update-project-name')
-    updateProjectName(event: FocusEvent) {
-        return (event.target as HTMLInputElement).value;
+    updateProjectName(name: string) {
+        return name;
+    }
+
+    createProjectUnlessDisabled() {
+        if (!this.disabled) {
+            this.createProject();
+        }
     }
 }
 </script>
@@ -48,6 +55,12 @@ export default class CreateProject extends Vue {
 
     .project-name {
         width: 250px;
+    }
+
+    button {
+        &.disabled {
+            cursor: not-allowed;
+        }
     }
 }
 </style>
