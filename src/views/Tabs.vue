@@ -25,13 +25,7 @@
 import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
-import {
-    CREATE_PROJECT,
-    CLOSE_TABS,
-    DOWNLOAD_PROJECTS,
-    LOAD_WINDOWS,
-    ACTIVATE_TAB,
-} from '@/store/action-types';
+import { CREATE_PROJECT, CLOSE_TABS, ACTIVATE_TAB } from '@/store/action-types';
 import { TabClean, TabSelectionModifiers, WindowClean } from '@/typings';
 import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
@@ -60,11 +54,6 @@ export default class Tabs extends Vue {
 
     @Getter(NEW_PROJECT_NAME)
     newProjectName!: string;
-
-    created() {
-        this.$store.dispatch(LOAD_WINDOWS);
-        this.$store.dispatch(DOWNLOAD_PROJECTS);
-    }
 
     onToggleSelected({
         tab,

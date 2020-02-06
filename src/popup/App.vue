@@ -8,6 +8,19 @@
     </div>
 </template>
 
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import { DOWNLOAD_PROJECTS, LOAD_WINDOWS } from '@/store/action-types';
+
+@Component
+export default class App extends Vue {
+    created(): void {
+        this.$store.dispatch(LOAD_WINDOWS);
+        this.$store.dispatch(DOWNLOAD_PROJECTS);
+    }
+}
+</script>
+
 <style lang="scss">
 #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
