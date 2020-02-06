@@ -1,12 +1,18 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Tabs from '../views/Tabs.vue';
+import QuickAction from '@/views/QuickAction.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
     {
         path: '/',
+        name: 'quickAction',
+        component: QuickAction,
+    },
+    {
+        path: '/tabs',
         name: 'tabs',
         component: Tabs,
     },
