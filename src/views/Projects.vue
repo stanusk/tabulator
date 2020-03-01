@@ -12,7 +12,7 @@
             >
                 <p class="project-name card-text">{{ project.name }}</p>
                 <b-button
-                    @click="revive(project)"
+                    @click.stop="revive(project.id)"
                     variant="outline-primary"
                     size="sm"
                 >
@@ -50,8 +50,8 @@ export default class Projects extends Vue {
         return this.projects.sort((a, b) => b.id - a.id);
     }
 
-    revive(project: Project) {
-        this.$store.dispatch(REVIVE_PROJECT, project);
+    revive(projectId: number) {
+        this.$store.dispatch(REVIVE_PROJECT, projectId);
     }
 }
 </script>

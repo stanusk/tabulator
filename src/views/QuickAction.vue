@@ -23,7 +23,7 @@
                 >
                     <p class="project-name card-text">{{ project.name }}</p>
                     <b-button
-                        @click="revive(project)"
+                        @click.stop="revive(project.id)"
                         variant="outline-primary"
                         size="sm"
                     >
@@ -221,9 +221,8 @@ export default class QuickAction extends Vue {
             : null;
     }
 
-    // todo: revive by projectId
-    revive(project: Project) {
-        this.$store.dispatch(REVIVE_PROJECT, project);
+    revive(projectId: number) {
+        this.$store.dispatch(REVIVE_PROJECT, projectId);
     }
 }
 </script>

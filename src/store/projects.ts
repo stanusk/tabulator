@@ -69,31 +69,43 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 }
             );
     },
-    [REVIVE_PROJECT]({ dispatch }, project: Project) {
-        const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
-            if (!urlsDict.hasOwnProperty(tab.windowId)) {
-                urlsDict[tab.windowId] = [tab.url];
-            } else {
-                urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];
-            }
+    [REVIVE_PROJECT]({ dispatch, state }, projectId: number) {
+        const project = state.projects.find(p => p.id === projectId);
 
-            return urlsDict;
-        }, {} as { [windowId: number]: string[] });
+        if (project) {
+            const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
+                if (!urlsDict.hasOwnProperty(tab.windowId)) {
+                    urlsDict[tab.windowId] = [tab.url];
+                } else {
+                    urlsDict[tab.windowId] = [
+                        ...urlsDict[tab.windowId],
+                        tab.url,
+                    ];
+                }
 
-        const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
-            urls => {
-                return browser.windows.create({ url: urls });
-            }
-        );
+                return urlsDict;
+            }, {} as { [windowId: number]: string[] });
 
-        Promise.all(windowsCreatePromises).then(
-            _ => {
-                dispatch(REMOVE_PROJECT, project);
-            },
-            err => {
-                alert('opening tabs failed: ' + err.message);
-            }
-        );
+            const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
+                urls => {
+                    return browser.windows.create({ url: urls });
+                }
+            );
+
+            Promise.all(windowsCreatePromises).then(
+                _ => {
+                    dispatch(REMOVE_PROJECT, project);
+                },
+                err => {
+                    alert('opening project failed: ' + err.message);
+                }
+            );
+        } else {
+            alert(
+                'opening project failed: could not find project with id: ' +
+                    projectId
+            );
+        }
     },
     [REMOVE_PROJECT]({ commit }, project: Project) {
         return browser.storage.sync
