@@ -1,14 +1,12 @@
 <template>
     <div class="quick-action">
-        <b-form-input
-            class="search-input"
-            placeholder="Searched project or tab"
-            v-model="searchInput"
-            debounce="500"
-            :autofocus="true"
-            @keydown="onKeydown($event)"
-        >
-        </b-form-input>
+        <quick-action-input
+            :q-input="searchInput"
+            @update-quick-action-input="searchInput = $event"
+            @execute-quick-action="executeQuickAction"
+            @select-next-result="selectNextResult"
+            @select-previous-result="selectPreviousResult"
+        ></quick-action-input>
 
         <div class="projects">
             <b-card
@@ -76,10 +74,12 @@ import { PROJECTS, WINDOWS } from '@/store/getter-types';
 import { Project, TabClean, WindowClean } from '@/typings';
 import TabsList from '@/components/TabsList.vue';
 import { ACTIVATE_TAB, REVIVE_PROJECT } from '@/store/action-types';
+import QuickActionInput from '@/components/QuickActionInput.vue';
 
 @Component({
     components: {
         TabsList,
+        QuickActionInput,
     },
 })
 export default class QuickAction extends Vue {
@@ -130,42 +130,26 @@ export default class QuickAction extends Vue {
         }, [] as Project[]);
     }
 
-    onKeydown(event: KeyboardEvent) {
-        switch (event.key) {
-            case 'Enter': {
-                const selectedWindow = this.filteredWindows[
-                    this.selectedWindowIndex
-                ];
-                const selectedTab = selectedWindow.tabs[this.selectedTabIndex];
-                this.activateTab(selectedTab.id, selectedWindow.id);
-                break;
-            }
-            case 'ArrowDown': {
-                event.stopPropagation();
-                event.preventDefault();
-                const selectedWindow = this.filteredWindows[
-                    this.selectedWindowIndex
-                ];
-                if (selectedWindow.tabs.length > this.selectedTabIndex + 1) {
-                    this.selectNextTab();
-                } else if (
-                    this.filteredWindows.length >
-                    this.selectedWindowIndex + 1
-                ) {
-                    this.selectNextWindow();
-                }
-                break;
-            }
-            case 'ArrowUp': {
-                event.stopPropagation();
-                event.preventDefault();
-                if (this.selectedTabIndex > 0) {
-                    this.selectPreviousTab();
-                } else if (this.selectedWindowIndex > 0) {
-                    this.selectPreviousWindow();
-                }
-                break;
-            }
+    executeQuickAction() {
+        const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
+        const selectedTab = selectedWindow.tabs[this.selectedTabIndex];
+        this.activateTab(selectedTab.id, selectedWindow.id);
+    }
+
+    selectNextResult() {
+        const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
+        if (selectedWindow.tabs.length > this.selectedTabIndex + 1) {
+            this.selectNextTab();
+        } else if (this.filteredWindows.length > this.selectedWindowIndex + 1) {
+            this.selectNextWindow();
+        }
+    }
+
+    selectPreviousResult() {
+        if (this.selectedTabIndex > 0) {
+            this.selectPreviousTab();
+        } else if (this.selectedWindowIndex > 0) {
+            this.selectPreviousWindow();
         }
     }
 
