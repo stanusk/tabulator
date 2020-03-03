@@ -2,7 +2,7 @@
     <div class="quick-action">
         <quick-action-input
             :q-input="searchInput"
-            @update-quick-action-input="searchInput = $event"
+            @update-quick-action-input="updateInput($event)"
             @execute-quick-action="executeQuickAction"
             @select-next-result="selectNextResult"
             @select-previous-result="selectPreviousResult"
@@ -70,10 +70,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { PROJECTS, WINDOWS } from '@/store/getter-types';
+import { PROJECTS, QUICK_ACTION_INPUT, WINDOWS } from '@/store/getter-types';
 import { Project, TabClean, WindowClean } from '@/typings';
 import TabsList from '@/components/TabsList.vue';
-import { ACTIVATE_TAB, REVIVE_PROJECT } from '@/store/action-types';
+import {
+    ACTIVATE_TAB,
+    REVIVE_PROJECT,
+    SET_QUICK_ACTION_INPUT,
+} from '@/store/action-types';
 import QuickActionInput from '@/components/QuickActionInput.vue';
 
 @Component({
@@ -89,7 +93,9 @@ export default class QuickAction extends Vue {
     @Getter(PROJECTS)
     projects!: Project[];
 
-    searchInput: string = '';
+    @Getter(QUICK_ACTION_INPUT)
+    searchInput!: string;
+
     selectedTabIndex: number = 0;
     selectedWindowIndex: number = 0;
 
@@ -171,6 +177,10 @@ export default class QuickAction extends Vue {
         const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
 
         this.selectedTabIndex = selectedWindow.tabs.length - 1;
+    }
+
+    updateInput(input: string) {
+        this.$store.dispatch(SET_QUICK_ACTION_INPUT, input);
     }
 
     activateTab(tabId: number, windowId: number) {
