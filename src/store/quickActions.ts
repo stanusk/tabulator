@@ -123,7 +123,43 @@ const getters: GetterTree<QuickActionsState, RootState> = {
         rootState: RootState
     ) {
         // aggregate projects
-        const projects = [] as SearchedProject[];
+        // todo: refactor/simplify/break down & move to service - just don't keep it this way
+        const projects = rootState.projects.projects.reduce(
+            (result, currentProject) => {
+                const searchedProjectsIncludeCurrentProject = state.searchResults.projects.includes(
+                    currentProject.id
+                );
+                const currentProjectTabsIncludedInSearchedProjectTabs = currentProject.tabs.filter(
+                    tab => {
+                        return !!state.searchResults.projectTabs.find(
+                            searchResultTab =>
+                                searchResultTab.projectId ===
+                                    currentProject.id &&
+                                searchResultTab.tabId === tab.id
+                        );
+                    }
+                );
+
+                if (
+                    searchedProjectsIncludeCurrentProject ||
+                    currentProjectTabsIncludedInSearchedProjectTabs.length > 0
+                ) {
+                    const tabs = currentProjectTabsIncludedInSearchedProjectTabs;
+                    return [
+                        ...result,
+                        {
+                            ...currentProject,
+                            tabs,
+                            hiddenTabsCount:
+                                currentProject.tabs.length - tabs.length,
+                        },
+                    ];
+                } else {
+                    return result;
+                }
+            },
+            [] as SearchedProject[]
+        );
 
         // aggregate windows
         // todo: refactor/simplify/break down & move to service - just don't keep it this way

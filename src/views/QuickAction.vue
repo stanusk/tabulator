@@ -10,7 +10,7 @@
 
         <div class="projects">
             <b-card
-                v-for="project in filteredProjects"
+                v-for="project in searchResults.projects"
                 v-bind:key="project.name"
                 body-class="m-0 p-0"
                 class="m-1"
@@ -37,28 +37,29 @@
                         >
                             {{ tab.title }}
                         </b-list-group-item>
+                        <b-list-group-item
+                            class="m-1 p-1"
+                            v-if="project.hiddenTabsCount > 0"
+                        >
+                            (+{{ project.hiddenTabsCount }} tabs)
+                        </b-list-group-item>
                     </b-list-group>
                 </b-collapse>
             </b-card>
         </div>
 
         <b-card
-            v-for="(bWindow, windowIndex) in searchResults.windows"
+            v-for="bWindow in searchResults.windows"
             v-bind:key="bWindow.id"
             class="filtered-window"
         >
             <b-list-group flush>
                 <b-list-group-item
                     button
-                    v-for="(tab, tabIndex) of bWindow.tabs"
+                    v-for="tab of bWindow.tabs"
                     v-bind:key="tab.id"
                     @click="activateTab(tab.id, bWindow.id)"
                     class="tab p-2"
-                    :class="{
-                        active:
-                            tabIndex === selectedTabIndex &&
-                            windowIndex === selectedWindowIndex,
-                    }"
                 >
                     {{ tab.title }}
                 </b-list-group-item>
@@ -67,7 +68,7 @@
                     v-if="bWindow.hiddenTabsCount > 0"
                     class="tab p-2"
                 >
-                    (+{{ bWindow.hiddenTabsCount }} more tabs)
+                    (+{{ bWindow.hiddenTabsCount }} tabs)
                 </b-list-group-item>
             </b-list-group>
         </b-card>
@@ -79,16 +80,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
 import {
     AGGREGATED_SEARCH_RESULTS,
-    PROJECTS,
     QUICK_ACTION_INPUT,
-    WINDOWS,
 } from '@/store/getter-types';
-import {
-    AggregatedSearchResults,
-    Project,
-    TabClean,
-    WindowClean,
-} from '@/typings';
+import { AggregatedSearchResults } from '@/typings';
 import TabsList from '@/components/TabsList.vue';
 import {
     ACTIVATE_TAB,
@@ -104,99 +98,22 @@ import QuickActionInput from '@/components/QuickActionInput.vue';
     },
 })
 export default class QuickAction extends Vue {
-    @Getter(WINDOWS)
-    bWindows!: WindowClean[];
-
-    @Getter(PROJECTS)
-    projects!: Project[];
-
     @Getter(QUICK_ACTION_INPUT)
     searchInput!: string;
 
     @Getter(AGGREGATED_SEARCH_RESULTS)
     searchResults!: AggregatedSearchResults;
 
-    selectedTabIndex: number = 0;
-    selectedWindowIndex: number = 0;
-
-    get filteredWindows(): WindowClean[] {
-        if (this.searchInput === '') {
-            return [];
-        }
-
-        this.selectedTabIndex = 0;
-        this.selectedWindowIndex = 0;
-
-        return this.bWindows.reduce((filteredWindows, currentWindow) => {
-            const windowWithFilteredTabs = this.filterWindow(
-                currentWindow,
-                this.searchInput
-            );
-
-            return windowWithFilteredTabs
-                ? [...filteredWindows, windowWithFilteredTabs]
-                : filteredWindows;
-        }, [] as WindowClean[]);
-    }
-
-    get filteredProjects(): Project[] {
-        if (this.searchInput === '') {
-            return [];
-        }
-
-        return this.projects.reduce((filteredProjects, currentProject) => {
-            const projectWithFilteredTabs = this.filterProject(
-                currentProject,
-                this.searchInput
-            );
-
-            return projectWithFilteredTabs
-                ? [...filteredProjects, projectWithFilteredTabs]
-                : filteredProjects;
-        }, [] as Project[]);
-    }
-
     executeQuickAction() {
-        const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
-        const selectedTab = selectedWindow.tabs[this.selectedTabIndex];
-        this.activateTab(selectedTab.id, selectedWindow.id);
+        // todo
     }
 
     selectNextResult() {
-        const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
-        if (selectedWindow.tabs.length > this.selectedTabIndex + 1) {
-            this.selectNextTab();
-        } else if (this.filteredWindows.length > this.selectedWindowIndex + 1) {
-            this.selectNextWindow();
-        }
+        // todo
     }
 
     selectPreviousResult() {
-        if (this.selectedTabIndex > 0) {
-            this.selectPreviousTab();
-        } else if (this.selectedWindowIndex > 0) {
-            this.selectPreviousWindow();
-        }
-    }
-
-    private selectNextTab() {
-        this.selectedTabIndex++;
-    }
-
-    private selectPreviousTab() {
-        this.selectedTabIndex--;
-    }
-
-    private selectNextWindow() {
-        this.selectedWindowIndex++;
-        this.selectedTabIndex = 0;
-    }
-
-    private selectPreviousWindow() {
-        this.selectedWindowIndex--;
-        const selectedWindow = this.filteredWindows[this.selectedWindowIndex];
-
-        this.selectedTabIndex = selectedWindow.tabs.length - 1;
+        // todo
     }
 
     updateInput(input: string) {
@@ -205,34 +122,6 @@ export default class QuickAction extends Vue {
 
     activateTab(tabId: number, windowId: number) {
         this.$store.dispatch(ACTIVATE_TAB, { tabId, windowId });
-    }
-
-    findTabsContainingText(text: string, tabs: TabClean[]) {
-        return tabs.filter(tab => {
-            return `${tab.title}${tab.url}`.indexOf(text) > -1;
-        });
-    }
-
-    filterWindow(window: WindowClean, text: string): WindowClean | null {
-        const windowWithFilteredTabs = {
-            ...window,
-            tabs: this.findTabsContainingText(text, window.tabs),
-        };
-
-        return windowWithFilteredTabs.tabs.length
-            ? windowWithFilteredTabs
-            : null;
-    }
-
-    filterProject(project: Project, text: string): Project | null {
-        const projectWithFilteredTabs = {
-            ...project,
-            tabs: this.findTabsContainingText(text, project.tabs),
-        };
-
-        return projectWithFilteredTabs.tabs.length
-            ? projectWithFilteredTabs
-            : null;
     }
 
     revive(projectId: number) {
