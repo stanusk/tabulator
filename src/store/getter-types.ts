@@ -8,3 +8,4 @@ export const SELECTED_TABS = 'SELECTED_TABS';
 
 // quickActions getters
 export const QUICK_ACTION_INPUT = 'QUICK_ACTION_INPUT';
+export const AGGREGATED_SEARCH_RESULTS = 'AGGREGATED_SEARCH_RESULTS';

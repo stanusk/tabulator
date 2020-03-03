@@ -44,3 +44,16 @@ export interface SearchedOpenTab {
     windowId: number;
     tabId: number;
 }
+
+export interface AggregatedSearchResults {
+    projects: SearchedProject[];
+    windows: SearchedWindow[];
+}
+
+export interface SearchedProject extends Project {
+    hiddenTabsCount: number;
+}
+
+export interface SearchedWindow extends WindowClean {
+    hiddenTabsCount: number;
+}

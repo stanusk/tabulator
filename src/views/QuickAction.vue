@@ -43,7 +43,7 @@
         </div>
 
         <b-card
-            v-for="(bWindow, windowIndex) in filteredWindows"
+            v-for="(bWindow, windowIndex) in searchResults.windows"
             v-bind:key="bWindow.id"
             class="filtered-window"
         >
@@ -62,6 +62,13 @@
                 >
                     {{ tab.title }}
                 </b-list-group-item>
+
+                <b-list-group-item
+                    v-if="bWindow.hiddenTabsCount > 0"
+                    class="tab p-2"
+                >
+                    (+{{ bWindow.hiddenTabsCount }} more tabs)
+                </b-list-group-item>
             </b-list-group>
         </b-card>
     </div>
@@ -70,8 +77,18 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { PROJECTS, QUICK_ACTION_INPUT, WINDOWS } from '@/store/getter-types';
-import { Project, TabClean, WindowClean } from '@/typings';
+import {
+    AGGREGATED_SEARCH_RESULTS,
+    PROJECTS,
+    QUICK_ACTION_INPUT,
+    WINDOWS,
+} from '@/store/getter-types';
+import {
+    AggregatedSearchResults,
+    Project,
+    TabClean,
+    WindowClean,
+} from '@/typings';
 import TabsList from '@/components/TabsList.vue';
 import {
     ACTIVATE_TAB,
@@ -95,6 +112,9 @@ export default class QuickAction extends Vue {
 
     @Getter(QUICK_ACTION_INPUT)
     searchInput!: string;
+
+    @Getter(AGGREGATED_SEARCH_RESULTS)
+    searchResults!: AggregatedSearchResults;
 
     selectedTabIndex: number = 0;
     selectedWindowIndex: number = 0;

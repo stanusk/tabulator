@@ -9,11 +9,17 @@ import {
     SET_QUICK_ACTION_INPUT as SET_INPUT__MUTATION,
     UPDATE_SEARCH_RESULTS as UPDATE_SEARCH_RESULTS__MUTATION,
 } from '@/store/mutation-types';
-import { QUICK_ACTION_INPUT } from '@/store/getter-types';
 import {
+    AGGREGATED_SEARCH_RESULTS,
+    QUICK_ACTION_INPUT,
+} from '@/store/getter-types';
+import {
+    AggregatedSearchResults,
     QuickActionSearchResults,
     SearchedOpenTab,
+    SearchedProject,
     SearchedProjectTab,
+    SearchedWindow,
 } from '@/typings';
 
 const state = {
@@ -110,6 +116,74 @@ const mutations: MutationTree<QuickActionsState> = {
 const getters: GetterTree<QuickActionsState, RootState> = {
     [QUICK_ACTION_INPUT](state: QuickActionsState) {
         return state.input;
+    },
+    [AGGREGATED_SEARCH_RESULTS](
+        state: QuickActionsState,
+        getters: any,
+        rootState: RootState
+    ) {
+        // aggregate projects
+        const projects = [] as SearchedProject[];
+
+        // aggregate windows
+        // todo: refactor/simplify/break down & move to service - just don't keep it this way
+        const allAvailableWindows = rootState.windows.windows;
+        const windows = state.searchResults.openTabs.reduce(
+            (result, currentTab) => {
+                const targetWindow = allAvailableWindows.find(
+                    win => win.id === currentTab.windowId
+                );
+
+                if (!targetWindow) {
+                    console.error(
+                        `AGGREGATED_SEARCH_RESULTS failed: window ${currentTab.windowId} not found!`
+                    );
+                    return result;
+                }
+
+                const targetTab = targetWindow.tabs.find(
+                    tab => tab.id === currentTab.tabId
+                );
+
+                if (!targetTab) {
+                    console.error(
+                        `AGGREGATED_SEARCH_RESULTS failed: tab ${currentTab.tabId} not found!`
+                    );
+                    return result;
+                }
+
+                const targetWindowIndexInResult = result.findIndex(
+                    win => win.id === currentTab.windowId
+                );
+                const windowIsAlreadyInResult = targetWindowIndexInResult > -1;
+
+                if (windowIsAlreadyInResult) {
+                    return result.map((win, index) => {
+                        if (index === targetWindowIndexInResult) {
+                            return {
+                                ...win,
+                                tabs: [...win.tabs, targetTab],
+                                hiddenTabsCount: win.hiddenTabsCount - 1,
+                            };
+                        } else {
+                            return win;
+                        }
+                    });
+                } else {
+                    return [
+                        ...result,
+                        {
+                            ...targetWindow,
+                            tabs: [targetTab],
+                            hiddenTabsCount: targetWindow.tabs.length - 1,
+                        },
+                    ];
+                }
+            },
+            [] as SearchedWindow[]
+        );
+
+        return { projects, windows } as AggregatedSearchResults;
     },
 };
 
