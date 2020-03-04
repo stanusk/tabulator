@@ -30,30 +30,34 @@ export interface TabSelectionModifiers {
 
 // quickActions
 export interface QuickActionSearchResults {
-    projects: number[];
-    projectTabs: SearchedProjectTab[];
-    openTabs: SearchedOpenTab[];
+    projects: SearchedProjectResult[];
+    openTabs: SearchedOpenTabResult[];
 }
 
-export interface SearchedProjectTab {
+export type SearchedProjectResult = SearchedProject | SearchedProjectTab;
+
+export interface SearchedProject {
     projectId: number;
+}
+
+export interface SearchedProjectTab extends SearchedProject {
     tabId: number;
 }
 
-export interface SearchedOpenTab {
+export interface SearchedOpenTabResult {
     windowId: number;
     tabId: number;
 }
 
 export interface AggregatedSearchResults {
-    projects: SearchedProject[];
-    windows: SearchedWindow[];
+    projects: SearchedProjectAggregate[];
+    windows: SearchedWindowAggregate[];
 }
 
-export interface SearchedProject extends Project {
+export interface SearchedProjectAggregate extends Project {
     hiddenTabsCount: number;
 }
 
-export interface SearchedWindow extends WindowClean {
+export interface SearchedWindowAggregate extends WindowClean {
     hiddenTabsCount: number;
 }

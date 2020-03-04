@@ -1,6 +1,13 @@
 import Tab = browser.tabs.Tab;
 import Window = browser.windows.Window;
-import { Project, ProjectsStorage, TabClean, WindowClean } from '@/typings';
+import {
+    Project,
+    ProjectsStorage,
+    SearchedProject,
+    SearchedProjectTab,
+    TabClean,
+    WindowClean,
+} from '@/typings';
 import { startsWith } from 'lodash-es';
 
 // clean url from suspender extension additions
@@ -72,4 +79,10 @@ export const logStorageSize = (keys?: string | string[]) => {
 
 export function clearStorage() {
     return browser.storage.sync.clear();
+}
+
+export function isSearchedProjectTab(
+    item: SearchedProject | SearchedProjectTab
+): item is SearchedProjectTab {
+    return 'tabId' in item;
 }

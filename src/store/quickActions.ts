@@ -16,19 +16,20 @@ import {
 import {
     AggregatedSearchResults,
     QuickActionSearchResults,
-    SearchedOpenTab,
-    SearchedProject,
-    SearchedProjectTab,
-    SearchedWindow,
+    SearchedOpenTabResult,
+    SearchedProjectAggregate,
+    SearchedProjectResult,
+    SearchedWindowAggregate,
 } from '@/typings';
+import { isSearchedProjectTab } from '@/store/helpers/helpers';
 
 const state = {
     input: '' as string,
     searchResults: {
         projects: [],
-        projectTabs: [],
         openTabs: [],
     } as QuickActionSearchResults,
+    selectedResult: null,
 };
 
 const actions: ActionTree<QuickActionsState, RootState> = {
@@ -45,14 +46,12 @@ const actions: ActionTree<QuickActionsState, RootState> = {
 
         if (searchPhrase !== '') {
             // search projects by name
-            const projects = [] as number[];
-            // search projects by tabs
-            const projectTabs = [] as SearchedProjectTab[];
+            const projects = [] as SearchedProjectResult[];
 
             rootState.projects.projects.forEach(project => {
                 // add projects by matching project name
                 if (project.name.indexOf(searchPhrase) > -1) {
-                    projects.push(project.id);
+                    projects.push({ projectId: project.id });
                 }
 
                 // add tabs by matching title/url
@@ -62,7 +61,7 @@ const actions: ActionTree<QuickActionsState, RootState> = {
                             .toLowerCase()
                             .indexOf(searchPhrase) > -1
                     ) {
-                        projectTabs.push({
+                        projects.push({
                             projectId: project.id,
                             tabId: tab.id,
                         });
@@ -71,7 +70,7 @@ const actions: ActionTree<QuickActionsState, RootState> = {
             });
 
             // search open tabs
-            const openTabs = [] as SearchedOpenTab[];
+            const openTabs = [] as SearchedOpenTabResult[];
 
             rootState.windows.windows.forEach(window => {
                 window.tabs.forEach(tab => {
@@ -87,7 +86,6 @@ const actions: ActionTree<QuickActionsState, RootState> = {
 
             commit(UPDATE_SEARCH_RESULTS__MUTATION, {
                 projects,
-                projectTabs,
                 openTabs,
             });
         }
@@ -101,9 +99,8 @@ const mutations: MutationTree<QuickActionsState> = {
     [RESET_SEARCH_RESULTS](state: QuickActionsState) {
         state.searchResults = {
             projects: [],
-            projectTabs: [],
             openTabs: [],
-        } as QuickActionSearchResults;
+        };
     },
     [UPDATE_SEARCH_RESULTS__MUTATION](
         state: QuickActionsState,
@@ -126,39 +123,34 @@ const getters: GetterTree<QuickActionsState, RootState> = {
         // todo: refactor/simplify/break down & move to service - just don't keep it this way
         const projects = rootState.projects.projects.reduce(
             (result, currentProject) => {
-                const searchedProjectsIncludeCurrentProject = state.searchResults.projects.includes(
-                    currentProject.id
+                const searchResultsMatchingProjectId = state.searchResults.projects.filter(
+                    searchResult => searchResult.projectId === currentProject.id
                 );
-                const currentProjectTabsIncludedInSearchedProjectTabs = currentProject.tabs.filter(
-                    tab => {
-                        return !!state.searchResults.projectTabs.find(
-                            searchResultTab =>
-                                searchResultTab.projectId ===
-                                    currentProject.id &&
-                                searchResultTab.tabId === tab.id
+                if (!searchResultsMatchingProjectId.length) {
+                    return result;
+                } else {
+                    const filteredTabs = currentProject.tabs.filter(tab => {
+                        return !!state.searchResults.projects.find(
+                            searchResult =>
+                                isSearchedProjectTab(searchResult) &&
+                                searchResult.projectId === currentProject.id &&
+                                searchResult.tabId === tab.id
                         );
-                    }
-                );
+                    });
+                    const hiddenTabsCount =
+                        currentProject.tabs.length - filteredTabs.length;
 
-                if (
-                    searchedProjectsIncludeCurrentProject ||
-                    currentProjectTabsIncludedInSearchedProjectTabs.length > 0
-                ) {
-                    const tabs = currentProjectTabsIncludedInSearchedProjectTabs;
                     return [
                         ...result,
                         {
                             ...currentProject,
-                            tabs,
-                            hiddenTabsCount:
-                                currentProject.tabs.length - tabs.length,
+                            tabs: filteredTabs,
+                            hiddenTabsCount,
                         },
                     ];
-                } else {
-                    return result;
                 }
             },
-            [] as SearchedProject[]
+            [] as SearchedProjectAggregate[]
         );
 
         // aggregate windows
@@ -216,7 +208,7 @@ const getters: GetterTree<QuickActionsState, RootState> = {
                     ];
                 }
             },
-            [] as SearchedWindow[]
+            [] as SearchedWindowAggregate[]
         );
 
         return { projects, windows } as AggregatedSearchResults;
