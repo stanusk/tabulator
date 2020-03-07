@@ -8,46 +8,6 @@
             @select-previous-result="selectPreviousResult"
         ></quick-action-input>
 
-        <div class="projects">
-            <b-card
-                v-for="project in searchResults.projects"
-                v-bind:key="project.name"
-                body-class="m-0 p-0"
-                class="m-1"
-            >
-                <b-container
-                    class="project-header d-flex justify-content-between align-items-center"
-                    v-b-toggle="`${project.id}`"
-                >
-                    <p class="project-name card-text">{{ project.name }}</p>
-                    <b-button
-                        @click.stop="revive(project.id)"
-                        variant="outline-primary"
-                        size="sm"
-                    >
-                        <b-icon icon="box-arrow-up-right"> </b-icon>
-                    </b-button>
-                </b-container>
-                <b-collapse :id="`${project.id}`" class="tabs">
-                    <b-list-group flush>
-                        <b-list-group-item
-                            class="m-1 p-1"
-                            v-for="tab in project.tabs"
-                            v-bind:key="tab.id"
-                        >
-                            {{ tab.title }}
-                        </b-list-group-item>
-                        <b-list-group-item
-                            class="m-1 p-1"
-                            v-if="project.hiddenTabsCount > 0"
-                        >
-                            (+{{ project.hiddenTabsCount }} tabs)
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-collapse>
-            </b-card>
-        </div>
-
         <b-card
             v-for="bWindow in searchResults.windows"
             v-bind:key="bWindow.id"
@@ -60,6 +20,12 @@
                     v-bind:key="tab.id"
                     @click="activateTab(tab.id, bWindow.id)"
                     class="tab p-2"
+                    :class="{
+                        active:
+                            selectedResult &&
+                            selectedResult.windowId === tab.windowId &&
+                            selectedResult.tabId === tab.id,
+                    }"
                 >
                     {{ tab.title }}
                 </b-list-group-item>
@@ -72,6 +38,55 @@
                 </b-list-group-item>
             </b-list-group>
         </b-card>
+
+        <div class="projects">
+            <b-card
+                v-for="project in searchResults.projects"
+                v-bind:key="project.name"
+                body-class="m-0 p-0"
+                class="m-1"
+            >
+                <b-container
+                    class="project-header d-flex justify-content-between align-items-center"
+                >
+                    <p class="project-name card-text">{{ project.name }}</p>
+                    <b-button
+                        @click.stop="revive(project.id)"
+                        variant="outline-primary"
+                        size="sm"
+                        :class="{
+                            active:
+                                selectedResult &&
+                                selectedResult.projectId === project.id &&
+                                !selectedResult.tabId,
+                        }"
+                    >
+                        <b-icon icon="box-arrow-up-right"> </b-icon>
+                    </b-button>
+                </b-container>
+                <b-list-group flush>
+                    <b-list-group-item
+                        class="m-1 p-1"
+                        v-for="tab in project.tabs"
+                        v-bind:key="tab.id"
+                        :class="{
+                            active:
+                                selectedResult &&
+                                selectedResult.projectId === project.id &&
+                                selectedResult.tabId === tab.id,
+                        }"
+                    >
+                        {{ tab.title }}
+                    </b-list-group-item>
+                    <b-list-group-item
+                        class="m-1 p-1"
+                        v-if="project.hiddenTabsCount > 0"
+                    >
+                        (+{{ project.hiddenTabsCount }} tabs)
+                    </b-list-group-item>
+                </b-list-group>
+            </b-card>
+        </div>
     </div>
 </template>
 
@@ -81,12 +96,19 @@ import { Getter } from 'vuex-class';
 import {
     AGGREGATED_SEARCH_RESULTS,
     QUICK_ACTION_INPUT,
+    SELECTED_RESULT,
 } from '@/store/getter-types';
-import { AggregatedSearchResults } from '@/typings';
+import {
+    AggregatedSearchResults,
+    SearchedOpenTabResult,
+    SearchedProjectResult,
+} from '@/typings';
 import TabsList from '@/components/TabsList.vue';
 import {
     ACTIVATE_TAB,
     REVIVE_PROJECT,
+    SELECT_NEXT_RESULT,
+    SELECT_PREVIOUS_RESULT,
     SET_QUICK_ACTION_INPUT,
 } from '@/store/action-types';
 import QuickActionInput from '@/components/QuickActionInput.vue';
@@ -104,16 +126,19 @@ export default class QuickAction extends Vue {
     @Getter(AGGREGATED_SEARCH_RESULTS)
     searchResults!: AggregatedSearchResults;
 
+    @Getter(SELECTED_RESULT)
+    selectedResult!: null | SearchedProjectResult | SearchedOpenTabResult;
+
     executeQuickAction() {
         // todo
     }
 
     selectNextResult() {
-        // todo
+        this.$store.dispatch(SELECT_NEXT_RESULT);
     }
 
     selectPreviousResult() {
-        // todo
+        this.$store.dispatch(SELECT_PREVIOUS_RESULT);
     }
 
     updateInput(input: string) {

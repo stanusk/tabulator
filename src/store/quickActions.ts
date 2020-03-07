@@ -3,15 +3,21 @@ import { RootState } from '@/store/index';
 import {
     UPDATE_SEARCH_RESULTS,
     SET_QUICK_ACTION_INPUT,
+    SELECT_FIRST_RESULT,
+    SELECT_NEXT_RESULT,
+    SELECT_PREVIOUS_RESULT,
 } from '@/store/action-types';
 import {
     RESET_SEARCH_RESULTS,
+    RESET_SELECTED_RESULT,
     SET_QUICK_ACTION_INPUT as SET_INPUT__MUTATION,
+    SET_SELECTED_RESULT,
     UPDATE_SEARCH_RESULTS as UPDATE_SEARCH_RESULTS__MUTATION,
 } from '@/store/mutation-types';
 import {
     AGGREGATED_SEARCH_RESULTS,
     QUICK_ACTION_INPUT,
+    SELECTED_RESULT,
 } from '@/store/getter-types';
 import {
     AggregatedSearchResults,
@@ -29,7 +35,10 @@ const state = {
         projects: [],
         openTabs: [],
     } as QuickActionSearchResults,
-    selectedResult: null,
+    selectedResult: null as
+        | null
+        | SearchedProjectResult
+        | SearchedOpenTabResult,
 };
 
 const actions: ActionTree<QuickActionsState, RootState> = {
@@ -37,9 +46,10 @@ const actions: ActionTree<QuickActionsState, RootState> = {
         commit(SET_INPUT__MUTATION, input);
         dispatch(UPDATE_SEARCH_RESULTS);
     },
-    [UPDATE_SEARCH_RESULTS]({ rootState, state, commit }) {
+    [UPDATE_SEARCH_RESULTS]({ rootState, state, commit, dispatch }) {
         // todo: refactor/simplify/break down - just don't keep it this way
 
+        commit(RESET_SELECTED_RESULT);
         commit(RESET_SEARCH_RESULTS);
 
         const searchPhrase = state.input.toLowerCase();
@@ -88,6 +98,101 @@ const actions: ActionTree<QuickActionsState, RootState> = {
                 projects,
                 openTabs,
             });
+
+            dispatch(SELECT_FIRST_RESULT);
+        }
+    },
+    [SELECT_FIRST_RESULT]({ commit, state }) {
+        const searchResults = state.searchResults;
+        const tabs = searchResults.openTabs;
+        const projects = searchResults.projects;
+
+        const firstResult = tabs.length ? tabs[0] : projects[0];
+
+        commit(SET_SELECTED_RESULT, firstResult);
+    },
+    [SELECT_PREVIOUS_RESULT]({ commit, state }) {
+        const selectedResult = state.selectedResult;
+
+        if (!selectedResult) {
+            console.error(
+                'SELECT_PREVIOUS_RESULT not possible: no result selected'
+            );
+            return;
+        }
+
+        const allSearchResults = [
+            ...state.searchResults.openTabs,
+            ...state.searchResults.projects,
+        ];
+
+        if (allSearchResults.length < 2) {
+            // either no results to select or there is only one result
+            console.info(
+                'SELECT_PREVIOUS_RESULT: results.length: ',
+                allSearchResults.length
+            );
+            return;
+        }
+
+        const currentIndex = allSearchResults.findIndex(
+            result => result === selectedResult
+        );
+
+        if (currentIndex === -1) {
+            console.error(
+                'SELECT_PREVIOUS_RESULT error: cannot find selected result: ',
+                selectedResult
+            );
+            commit(SET_SELECTED_RESULT, allSearchResults[0]);
+        } else if (currentIndex === 0) {
+            commit(
+                SET_SELECTED_RESULT,
+                allSearchResults[allSearchResults.length - 1]
+            );
+        } else {
+            commit(SET_SELECTED_RESULT, allSearchResults[currentIndex - 1]);
+        }
+    },
+    [SELECT_NEXT_RESULT]({ commit, state }) {
+        const selectedResult = state.selectedResult;
+
+        if (!selectedResult) {
+            console.error(
+                'SELECT_NEXT_RESULT not possible: no result selected'
+            );
+            return;
+        }
+
+        const allSearchResults = [
+            ...state.searchResults.openTabs,
+            ...state.searchResults.projects,
+        ];
+
+        if (allSearchResults.length < 2) {
+            // either no results to select or there is only one result
+            console.info(
+                'SELECT_NEXT_RESULT: results.length: ',
+                allSearchResults.length
+            );
+            return;
+        }
+
+        const currentIndex = allSearchResults.findIndex(
+            result => result === selectedResult
+        );
+
+        if (currentIndex === -1) {
+            console.error(
+                'SELECT_NEXT_RESULT error: cannot find selected result: ',
+                selectedResult
+            );
+            commit(SET_SELECTED_RESULT, allSearchResults[0]);
+            // todo: note: identical so far - refactor
+        } else if (currentIndex === allSearchResults.length - 1) {
+            commit(SET_SELECTED_RESULT, allSearchResults[0]);
+        } else {
+            commit(SET_SELECTED_RESULT, allSearchResults[currentIndex + 1]);
         }
     },
 };
@@ -108,11 +213,23 @@ const mutations: MutationTree<QuickActionsState> = {
     ) {
         state.searchResults = results;
     },
+    [SET_SELECTED_RESULT](
+        state: QuickActionsState,
+        selectedResult: SearchedProjectResult
+    ) {
+        state.selectedResult = selectedResult;
+    },
+    [RESET_SELECTED_RESULT](state: QuickActionsState) {
+        state.selectedResult = null;
+    },
 };
 
 const getters: GetterTree<QuickActionsState, RootState> = {
     [QUICK_ACTION_INPUT](state: QuickActionsState) {
         return state.input;
+    },
+    [SELECTED_RESULT](state: QuickActionsState) {
+        return state.selectedResult;
     },
     [AGGREGATED_SEARCH_RESULTS](
         state: QuickActionsState,
