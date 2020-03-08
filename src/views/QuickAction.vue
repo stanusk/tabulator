@@ -151,7 +151,7 @@ export default class QuickAction extends Vue {
     }
 
     revive(projectId: number) {
-        this.$store.dispatch(REVIVE_PROJECT, projectId);
+        this.$store.dispatch(REVIVE_PROJECT, { projectId });
     }
 }
 </script>

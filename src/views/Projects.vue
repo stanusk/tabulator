@@ -51,7 +51,7 @@ export default class Projects extends Vue {
     }
 
     revive(projectId: number) {
-        this.$store.dispatch(REVIVE_PROJECT, projectId);
+        this.$store.dispatch(REVIVE_PROJECT, { projectId });
     }
 }
 </script>

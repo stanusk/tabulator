@@ -7,6 +7,7 @@ import {
     DOWNLOAD_PROJECTS,
     REMOVE_PROJECT,
     REVIVE_PROJECT,
+    ACTIVATE_TAB,
 } from '@/store/action-types';
 import {
     ADD_PROJECT,
@@ -69,41 +70,102 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 }
             );
     },
-    [REVIVE_PROJECT]({ dispatch, state }, projectId: number) {
+    [REVIVE_PROJECT](
+        { dispatch, state },
+        { projectId, tabId }: { projectId: number; tabId?: number }
+    ) {
+        // todo: refactor/simplify/break down - just don't keep it this way
+
         const project = state.projects.find(p => p.id === projectId);
 
-        if (project) {
-            const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
-                if (!urlsDict.hasOwnProperty(tab.windowId)) {
-                    urlsDict[tab.windowId] = [tab.url];
-                } else {
-                    urlsDict[tab.windowId] = [
-                        ...urlsDict[tab.windowId],
-                        tab.url,
-                    ];
-                }
-
-                return urlsDict;
-            }, {} as { [windowId: number]: string[] });
-
-            const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
-                urls => {
-                    return browser.windows.create({ url: urls });
-                }
-            );
-
-            Promise.all(windowsCreatePromises).then(
-                _ => {
-                    dispatch(REMOVE_PROJECT, project);
-                },
-                err => {
-                    alert('opening project failed: ' + err.message);
-                }
-            );
-        } else {
+        if (!project) {
             alert(
                 'opening project failed: could not find project with id: ' +
                     projectId
+            );
+            return;
+        }
+
+        const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
+            if (!urlsDict.hasOwnProperty(tab.windowId)) {
+                urlsDict[tab.windowId] = [tab.url];
+            } else {
+                urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];
+            }
+
+            return urlsDict;
+        }, {} as { [windowId: number]: string[] });
+
+        const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
+            urls => {
+                return browser.windows.create({ url: urls });
+            }
+        );
+
+        if (!tabId) {
+            return Promise.all(windowsCreatePromises).then(
+                _ => {
+                    return dispatch(REMOVE_PROJECT, project);
+                },
+                err => {
+                    // todo: rethink errors - alert or console.error, or console.warn, or...
+                    alert('opening project failed: ' + err.message);
+                    return err;
+                }
+            );
+        } else {
+            const targetTab = project.tabs.find(tab => tab.id === tabId);
+            if (!targetTab) {
+                console.warn(
+                    `REVIVE_PROJECT: activating tabId ${tabId} not possible - tab not found in current projects.`
+                );
+                return;
+            }
+
+            const targetTabUrl = targetTab.url;
+
+            return Promise.all(windowsCreatePromises).then(
+                windows => {
+                    dispatch(REMOVE_PROJECT, project);
+
+                    let targetWindowNewId: number | undefined = undefined;
+                    let targetTabNewId: number | undefined = undefined;
+
+                    windows.forEach(win => {
+                        if (!win) {
+                            return;
+                        }
+
+                        const targetTab = win.tabs?.find(tab => {
+                            // todo!!!!!!!: fix
+                            return (
+                                tab.url === targetTabUrl ||
+                                // @ts-ignore - only in chrome and not typed
+                                tab.pendingUrl === targetTabUrl
+                            );
+                        });
+                        if (targetTab) {
+                            targetTabNewId = targetTab.id;
+                            targetWindowNewId = targetTab.windowId;
+                        }
+                    });
+
+                    if (!targetWindowNewId && !targetTabNewId) {
+                        console.warn(
+                            `REVIVE_PROJECT: activating tabId ${tabId} not possible - tab not found in revived windows.`
+                        );
+                    } else {
+                        dispatch(ACTIVATE_TAB, {
+                            tabId: targetTabNewId,
+                            windowId: targetWindowNewId,
+                        });
+                    }
+                },
+                err => {
+                    // todo: rethink errors - alert or console.error, or console.warn, or...
+                    alert('opening project failed: ' + err.message);
+                    return err;
+                }
             );
         }
     },

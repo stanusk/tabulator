@@ -218,11 +218,14 @@ const actions: ActionTree<QuickActionsState, RootState> = {
                 windowId: selectedResult.windowId,
             });
         } else if (isSearchedProjectResult(selectedResult)) {
-            dispatch(REVIVE_PROJECT, selectedResult.projectId);
+            const reviveParams = {
+                projectId: selectedResult.projectId,
+                ...(isSearchedProjectTab(selectedResult)
+                    ? { tabId: selectedResult.tabId }
+                    : {}),
+            };
 
-            if (isSearchedProjectTab(selectedResult)) {
-                // todo: update REVIVE_PROJECT dispatch(REVIVE_PROJECT,{projectId, tabId})
-            }
+            dispatch(REVIVE_PROJECT, reviveParams);
         } else {
             console.error(
                 'EXECUTE_QUICK_ACTION: unknown result type: ',
