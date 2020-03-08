@@ -106,6 +106,7 @@ import {
 import TabsList from '@/components/TabsList.vue';
 import {
     ACTIVATE_TAB,
+    EXECUTE_QUICK_ACTION,
     REVIVE_PROJECT,
     SELECT_NEXT_RESULT,
     SELECT_PREVIOUS_RESULT,
@@ -130,7 +131,7 @@ export default class QuickAction extends Vue {
     selectedResult!: null | SearchedProjectResult | SearchedOpenTabResult;
 
     executeQuickAction() {
-        // todo
+        this.$store.dispatch(EXECUTE_QUICK_ACTION);
     }
 
     selectNextResult() {

@@ -3,7 +3,9 @@ import Window = browser.windows.Window;
 import {
     Project,
     ProjectsStorage,
+    SearchedOpenTabResult,
     SearchedProject,
+    SearchedProjectResult,
     SearchedProjectTab,
     TabClean,
     WindowClean,
@@ -85,4 +87,16 @@ export function isSearchedProjectTab(
     item: SearchedProject | SearchedProjectTab
 ): item is SearchedProjectTab {
     return 'tabId' in item;
+}
+
+export function isSearchedOpenTabResult(
+    result: SearchedOpenTabResult | SearchedProjectResult
+): result is SearchedOpenTabResult {
+    return 'windowId' in result;
+}
+
+export function isSearchedProjectResult(
+    result: SearchedOpenTabResult | SearchedProjectResult
+): result is SearchedProjectResult {
+    return 'projectId' in result;
 }

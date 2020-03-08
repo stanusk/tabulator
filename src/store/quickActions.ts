@@ -6,13 +6,17 @@ import {
     SELECT_FIRST_RESULT,
     SELECT_NEXT_RESULT,
     SELECT_PREVIOUS_RESULT,
+    EXECUTE_QUICK_ACTION,
+    ACTIVATE_TAB,
+    REVIVE_PROJECT,
 } from '@/store/action-types';
 import {
     RESET_SEARCH_RESULTS,
     RESET_SELECTED_RESULT,
     SET_QUICK_ACTION_INPUT as SET_INPUT__MUTATION,
     SET_SELECTED_RESULT,
-    UPDATE_SEARCH_RESULTS as UPDATE_SEARCH_RESULTS__MUTATION,
+    SET_SEARCH_RESULTS,
+    RESET_QUICK_ACTION_INPUT,
 } from '@/store/mutation-types';
 import {
     AGGREGATED_SEARCH_RESULTS,
@@ -27,7 +31,11 @@ import {
     SearchedProjectResult,
     SearchedWindowAggregate,
 } from '@/typings';
-import { isSearchedProjectTab } from '@/store/helpers/helpers';
+import {
+    isSearchedOpenTabResult,
+    isSearchedProjectResult,
+    isSearchedProjectTab,
+} from '@/store/helpers/helpers';
 
 const state = {
     input: '' as string,
@@ -94,7 +102,7 @@ const actions: ActionTree<QuickActionsState, RootState> = {
                 });
             });
 
-            commit(UPDATE_SEARCH_RESULTS__MUTATION, {
+            commit(SET_SEARCH_RESULTS, {
                 projects,
                 openTabs,
             });
@@ -195,11 +203,45 @@ const actions: ActionTree<QuickActionsState, RootState> = {
             commit(SET_SELECTED_RESULT, allSearchResults[currentIndex + 1]);
         }
     },
+    [EXECUTE_QUICK_ACTION]({ state, dispatch, commit }) {
+        const selectedResult = state.selectedResult;
+        if (!selectedResult) {
+            console.error(
+                'EXECUTE_QUICK_ACTION not possible: no result selected'
+            );
+            return;
+        }
+
+        if (isSearchedOpenTabResult(selectedResult)) {
+            dispatch(ACTIVATE_TAB, {
+                tabId: selectedResult.tabId,
+                windowId: selectedResult.windowId,
+            });
+        } else if (isSearchedProjectResult(selectedResult)) {
+            dispatch(REVIVE_PROJECT, selectedResult.projectId);
+
+            if (isSearchedProjectTab(selectedResult)) {
+                // todo: update REVIVE_PROJECT dispatch(REVIVE_PROJECT,{projectId, tabId})
+            }
+        } else {
+            console.error(
+                'EXECUTE_QUICK_ACTION: unknown result type: ',
+                selectedResult
+            );
+        }
+
+        commit(RESET_SELECTED_RESULT);
+        commit(RESET_SEARCH_RESULTS);
+        commit(RESET_QUICK_ACTION_INPUT);
+    },
 };
 
 const mutations: MutationTree<QuickActionsState> = {
     [SET_INPUT__MUTATION](state: QuickActionsState, input: string) {
         state.input = input;
+    },
+    [RESET_QUICK_ACTION_INPUT](state: QuickActionsState) {
+        state.input = '';
     },
     [RESET_SEARCH_RESULTS](state: QuickActionsState) {
         state.searchResults = {
@@ -207,7 +249,7 @@ const mutations: MutationTree<QuickActionsState> = {
             openTabs: [],
         };
     },
-    [UPDATE_SEARCH_RESULTS__MUTATION](
+    [SET_SEARCH_RESULTS](
         state: QuickActionsState,
         results: QuickActionSearchResults
     ) {
