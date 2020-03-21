@@ -75,6 +75,8 @@ const actions: ActionTree<WindowsState, RootState> = {
 
 const mutations: MutationTree<WindowsState> = {
     [SET_WINDOWS](state: WindowsState, windows: WindowClean[]) {
+        // todo - move sorting to window component once created
+        windows.sort(a => (a.focused ? -1 : 1));
         state.windows = windows;
     },
     [SELECT_TAB](state: WindowsState, tab: TabClean) {

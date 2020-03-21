@@ -12,6 +12,7 @@ export interface ProjectsStorage {
 // windows and tabs
 export interface WindowClean {
     id: number;
+    focused: boolean;
     tabs: TabClean[];
 }
 

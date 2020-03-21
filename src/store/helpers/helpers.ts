@@ -33,6 +33,7 @@ export const cleanWindow = (window: Window): WindowClean => {
 
     return {
         id: window.id || 0,
+        focused: window.focused,
         tabs: cleanTabs,
     };
 };
