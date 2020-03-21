@@ -19,6 +19,8 @@ import {
 } from '@/store/mutation-types';
 import { NEW_PROJECT_NAME, PROJECTS } from '@/store/getter-types';
 import {
+    findTabByUrl,
+    getUrlsPerWindow,
     makeStorageProjectId,
     packProjectForStorage,
     unpackProjectFromStorage,
@@ -74,8 +76,6 @@ const actions: ActionTree<ProjectsState, RootState> = {
         { dispatch, state },
         { projectId, tabId }: { projectId: number; tabId?: number }
     ) {
-        // todo: refactor/simplify/break down - just don't keep it this way
-
         const project = state.projects.find(p => p.id === projectId);
 
         if (!project) {
@@ -86,17 +86,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
             return;
         }
 
-        const urlsByWindowIdDict = project.tabs.reduce((urlsDict, tab) => {
-            if (!urlsDict.hasOwnProperty(tab.windowId)) {
-                urlsDict[tab.windowId] = [tab.url];
-            } else {
-                urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];
-            }
-
-            return urlsDict;
-        }, {} as { [windowId: number]: string[] });
-
-        const windowsCreatePromises = Object.values(urlsByWindowIdDict).map(
+        const windowsCreatePromises = getUrlsPerWindow(project.tabs).map(
             urls => {
                 return browser.windows.create({ url: urls });
             }
@@ -122,42 +112,25 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 return;
             }
 
-            const targetTabUrl = targetTab.url;
+            const targetUrl = targetTab.url;
 
             return Promise.all(windowsCreatePromises).then(
                 windows => {
                     dispatch(REMOVE_PROJECT, project);
 
-                    let targetWindowNewId: number | undefined = undefined;
-                    let targetTabNewId: number | undefined = undefined;
+                    const {
+                        windowId: newWindowId,
+                        tabId: newTabId,
+                    } = findTabByUrl(windows, targetUrl);
 
-                    windows.forEach(win => {
-                        if (!win) {
-                            return;
-                        }
-
-                        const targetTab = win.tabs?.find(tab => {
-                            // todo!!!!!!!: fix
-                            return (
-                                tab.url === targetTabUrl ||
-                                // @ts-ignore - only in chrome and not typed
-                                tab.pendingUrl === targetTabUrl
-                            );
-                        });
-                        if (targetTab) {
-                            targetTabNewId = targetTab.id;
-                            targetWindowNewId = targetTab.windowId;
-                        }
-                    });
-
-                    if (!targetWindowNewId && !targetTabNewId) {
+                    if (!newWindowId && !newTabId) {
                         console.warn(
                             `REVIVE_PROJECT: activating tabId ${tabId} not possible - tab not found in revived windows.`
                         );
                     } else {
                         dispatch(ACTIVATE_TAB, {
-                            tabId: targetTabNewId,
-                            windowId: targetWindowNewId,
+                            tabId: newTabId,
+                            windowId: newWindowId,
                         });
                     }
                 },
