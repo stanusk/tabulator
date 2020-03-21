@@ -1,8 +1,6 @@
 import Tab = browser.tabs.Tab;
 import Window = browser.windows.Window;
 import {
-    Project,
-    ProjectsStorage,
     SearchedOpenTabResult,
     SearchedProject,
     SearchedProjectResult,
@@ -10,7 +8,6 @@ import {
     TabClean,
     WindowClean,
 } from '@/typings';
-import { startsWith } from 'lodash-es';
 
 // clean url from suspender extension additions
 export const cleanUrl = (url: string) => {
@@ -36,38 +33,6 @@ export const cleanWindow = (window: Window): WindowClean => {
         focused: window.focused,
         tabs: cleanTabs,
     };
-};
-
-export const packProjectForStorage = (project: Project): ProjectsStorage => {
-    return {
-        [makeStorageProjectId(project.id)]: {
-            name: project.name,
-            tabs: project.tabs,
-        },
-    };
-};
-
-export const unpackProjectFromStorage = (
-    projectsStorage: ProjectsStorage
-): Project[] => {
-    const ids = Object.keys(projectsStorage).filter(id => startsWith(id, 'p_'));
-
-    return ids.map(id => {
-        return {
-            id: makeProjectIdFromStorage(id),
-            ...projectsStorage[id],
-        };
-    });
-};
-
-export const makeStorageProjectId = (projectId: number): string => {
-    return 'p_' + projectId;
-};
-
-export const makeProjectIdFromStorage = (storageProjectId: string): number => {
-    // from 'p_123' turn into 123
-    // todo: consider optimizing with regex
-    return +storageProjectId.split('_')[1];
 };
 
 export const logStorageSize = (keys?: string | string[]) => {

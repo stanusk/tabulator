@@ -22,7 +22,7 @@ import {
     makeStorageProjectId,
     packProjectForStorage,
     unpackProjectFromStorage,
-} from '@/store/helpers/helpers';
+} from '@/store/helpers/projects';
 
 const state = {
     projects: [] as Project[],
