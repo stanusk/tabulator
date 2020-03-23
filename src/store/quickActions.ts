@@ -36,6 +36,7 @@ import {
     isSearchedProjectResult,
     isSearchedProjectTab,
 } from '@/store/helpers/helpers';
+import { findOpenTabs, findProjects } from '@/store/helpers/quickActions';
 
 const state = {
     input: '' as string,
@@ -55,60 +56,29 @@ const actions: ActionTree<QuickActionsState, RootState> = {
         dispatch(UPDATE_SEARCH_RESULTS);
     },
     [UPDATE_SEARCH_RESULTS]({ rootState, state, commit, dispatch }) {
-        // todo: refactor/simplify/break down - just don't keep it this way
-
         commit(RESET_SELECTED_RESULT);
         commit(RESET_SEARCH_RESULTS);
 
         const searchPhrase = state.input.toLowerCase();
 
-        if (searchPhrase !== '') {
-            // search projects by name
-            const projects = [] as SearchedProjectResult[];
-
-            rootState.projects.projects.forEach(project => {
-                // add projects by matching project name
-                if (project.name.indexOf(searchPhrase) > -1) {
-                    projects.push({ projectId: project.id });
-                }
-
-                // add tabs by matching title/url
-                project.tabs.forEach(tab => {
-                    if (
-                        `${tab.title}${tab.url}`
-                            .toLowerCase()
-                            .indexOf(searchPhrase) > -1
-                    ) {
-                        projects.push({
-                            projectId: project.id,
-                            tabId: tab.id,
-                        });
-                    }
-                });
-            });
-
-            // search open tabs
-            const openTabs = [] as SearchedOpenTabResult[];
-
-            rootState.windows.windows.forEach(window => {
-                window.tabs.forEach(tab => {
-                    if (
-                        `${tab.title}${tab.url}`
-                            .toLowerCase()
-                            .indexOf(searchPhrase) > -1
-                    ) {
-                        openTabs.push({ windowId: window.id, tabId: tab.id });
-                    }
-                });
-            });
-
-            commit(SET_SEARCH_RESULTS, {
-                projects,
-                openTabs,
-            });
-
-            dispatch(SELECT_FIRST_RESULT);
+        if (!searchPhrase) {
+            console.warn('UPDATE_SEARCH_RESULTS: searchPhrase is empty');
+            return;
         }
+
+        const projects = findProjects(
+            searchPhrase,
+            rootState.projects.projects
+        );
+
+        const openTabs = findOpenTabs(searchPhrase, rootState.windows.windows);
+
+        commit(SET_SEARCH_RESULTS, {
+            projects,
+            openTabs,
+        });
+
+        dispatch(SELECT_FIRST_RESULT);
     },
     [SELECT_FIRST_RESULT]({ commit, state }) {
         const searchResults = state.searchResults;
