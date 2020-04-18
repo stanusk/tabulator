@@ -6,6 +6,7 @@ module.exports = {
             title: 'Popup',
         },
     },
+
     pluginOptions: {
         browserExtension: {
             componentOptions: {
@@ -14,5 +15,11 @@ module.exports = {
                 },
             },
         },
+        quasar: {
+            importStrategy: 'kebab',
+            rtlSupport: false,
+        },
     },
+
+    transpileDependencies: ['quasar'],
 };
