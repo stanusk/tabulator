@@ -35,7 +35,7 @@ const actions: ActionTree<WindowsState, RootState> = {
     },
     [CLOSE_TABS]({ commit, state }, closedTabsIds: number[]) {
         browser.tabs.remove(closedTabsIds).then(
-            _ => {
+            () => {
                 const windowsWithoutClosedTabs = state.windows
                     // remove closed tabs
                     .map(win => {

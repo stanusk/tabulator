@@ -1,5 +1,5 @@
 import { Project, ProjectsStorage, TabClean } from '@/typings';
-import { startsWith } from 'lodash-es';
+import { has, startsWith } from 'lodash-es';
 
 export const packProjectForStorage = (project: Project): ProjectsStorage => {
     return {
@@ -37,7 +37,7 @@ export const makeProjectIdFromStorageProjectId = (
 
 export const getUrlsPerWindow = (tabs: TabClean[]) => {
     const urlsByWindowIdDict = tabs.reduce((urlsDict, tab) => {
-        if (!urlsDict.hasOwnProperty(tab.windowId)) {
+        if (!has(urlsDict, tab.windowId)) {
             urlsDict[tab.windowId] = [tab.url];
         } else {
             urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];

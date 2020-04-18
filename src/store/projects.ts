@@ -61,7 +61,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 },
             })
             .then(
-                _ => {
+                () => {
                     commit(ADD_PROJECT, newProject);
                     commit(RESET_NEW_PROJECT_NAME);
                     dispatch(CLOSE_SELECTED_TABS);
@@ -94,7 +94,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
 
         if (!tabId) {
             return Promise.all(windowsCreatePromises).then(
-                _ => {
+                () => {
                     return dispatch(REMOVE_PROJECT, project);
                 },
                 err => {
@@ -146,7 +146,7 @@ const actions: ActionTree<ProjectsState, RootState> = {
         return browser.storage.sync
             .remove(makeStorageProjectId(project.id))
             .then(
-                _ => {
+                () => {
                     commit(REMOVE_PROJECT__MUTATION, project);
                 },
                 err => {
