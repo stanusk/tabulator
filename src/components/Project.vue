@@ -75,18 +75,21 @@ export default class ProjectComponent extends Vue {
             return false;
         }
 
-        const isCorrectProject = selectedResult.projectId === projectId;
-
-        if (!isCorrectProject) {
+        const isSelectedProject = selectedResult.projectId === projectId;
+        if (!isSelectedProject) {
             return false;
         }
 
-        const isSelectedProject = !isSearchedProjectTab(selectedResult);
-        const isSelectedTab =
-            isSearchedProjectTab(selectedResult) &&
-            selectedResult.tabId === tabId;
+        const isSearchingForProject =
+            !isSearchedProjectTab(selectedResult) && !tabId;
+        if (isSearchingForProject) {
+            return true;
+        }
 
-        return isSelectedProject || isSelectedTab;
+        return (
+            isSearchedProjectTab(selectedResult) &&
+            selectedResult.tabId === tabId
+        );
     }
 }
 </script>
