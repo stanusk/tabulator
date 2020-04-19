@@ -26,11 +26,8 @@
                 >
                     {{ tab.title }}
                 </b-list-group-item>
-                <b-list-group-item
-                    class="m-1 p-1"
-                    v-if="project.hiddenTabsCount > 0"
-                >
-                    (+{{ project.hiddenTabsCount }} tabs)
+                <b-list-group-item class="m-1 p-1" v-if="hiddenTabsCount > 0">
+                    (+{{ hiddenTabsCount }} tabs)
                 </b-list-group-item>
             </b-list-group>
         </b-collapse>
@@ -40,8 +37,8 @@
 <script lang="ts">
 import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import {
+    Project,
     SearchedOpenTabResult,
-    SearchedProjectAggregate,
     SearchedProjectResult,
 } from '@/typings';
 import {
@@ -55,12 +52,16 @@ type SelectedResult = null | SearchedProjectResult | SearchedOpenTabResult;
 @Component
 export default class ProjectComponent extends Vue {
     @Prop()
-    project!: SearchedProjectAggregate;
-    @Prop({ default: false })
-    expanded!: boolean;
+    project!: Project;
 
     @Prop({ default: null })
     selectedResult!: SelectedResult;
+
+    @Prop({ default: 0 })
+    hiddenTabsCount!: number;
+
+    @Prop({ default: false })
+    expanded!: boolean;
 
     @Emit('revive')
     revive() {}

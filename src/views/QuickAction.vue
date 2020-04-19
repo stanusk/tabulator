@@ -42,9 +42,10 @@
         <div class="projects">
             <project-component
                 v-for="project in searchResults.projects"
-                v-bind:key="project.name"
+                v-bind:key="project.id"
                 :project="project"
                 :selected-result="selectedResult"
+                :hidden-tabs-count="project.hiddenTabsCount"
                 :expanded="true"
                 @revive="revive(project.id)"
             ></project-component>

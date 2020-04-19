@@ -1,36 +1,11 @@
 <template>
     <div class="projects">
-        <b-card
-            class="project-card"
+        <project-component
             v-for="project in projectsSorted"
-            v-bind:key="project.name"
-            body-class="m-0 p-0"
-        >
-            <b-container
-                class="project-header d-flex justify-content-between align-items-center"
-                v-b-toggle="`${project.id}`"
-            >
-                <p class="project-name card-text">{{ project.name }}</p>
-                <b-button
-                    @click.stop="revive(project.id)"
-                    variant="outline-primary"
-                    size="sm"
-                >
-                    <b-icon icon="box-arrow-up-right"> </b-icon>
-                </b-button>
-            </b-container>
-            <b-collapse :id="`${project.id}`" class="tabs">
-                <b-list-group flush>
-                    <b-list-group-item
-                        class="m-1 p-1"
-                        v-for="tab in project.tabs"
-                        v-bind:key="tab.id"
-                    >
-                        {{ tab.title }}
-                    </b-list-group-item>
-                </b-list-group>
-            </b-collapse>
-        </b-card>
+            v-bind:key="project.id"
+            :project="project"
+            @revive="revive(project.id)"
+        ></project-component>
     </div>
 </template>
 
@@ -40,8 +15,9 @@ import { Project } from '@/typings';
 import { Getter } from 'vuex-class';
 import { PROJECTS } from '@/store/getter-types';
 import { REVIVE_PROJECT } from '@/store/action-types';
+import ProjectComponent from '@/components/Project.vue';
 
-@Component
+@Component({ components: { ProjectComponent } })
 export default class Projects extends Vue {
     @Getter(PROJECTS)
     projects!: Project[];
@@ -56,24 +32,4 @@ export default class Projects extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-.projects {
-    .project-card {
-        margin-top: 2px;
-
-        .project-header {
-            padding: 5px;
-            background-color: azure;
-            cursor: pointer;
-            .project-name {
-                margin: auto 0;
-                font-weight: bold;
-            }
-        }
-        .tabs {
-            border-top: 1px solid lightgrey;
-            font-size: 0.8rem;
-        }
-    }
-}
-</style>
+<style scoped lang="scss"></style>
