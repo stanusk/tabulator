@@ -5,7 +5,7 @@
             v-for="tab of tabs"
             v-bind:key="tab.id"
             @click="toggleSelected(tab, isSelected(tab), $event)"
-            class="tab d-flex justify-content-between align-items-center p-2"
+            class="tab p-2"
             :class="{ highlight: tab.active }"
         >
             <span
@@ -15,7 +15,7 @@
                 {{ tab.title }}
             </span>
 
-            <div>
+            <div class="tab-title-buttons">
                 <b-icon
                     :icon="isSelected(tab) ? 'star-fill' : 'star'"
                     variant="primary"
@@ -82,18 +82,28 @@ export default class TabsList extends Vue {
 
 <style scoped lang="scss">
 .tab {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     &.highlight {
         background-color: azure;
     }
+
     .tab-title-text {
+        flex-grow: 1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 250px;
+        text-align: left;
 
         &:hover {
             text-decoration: underline;
         }
+    }
+
+    .tab-title-buttons {
+        display: flex;
     }
 }
 </style>

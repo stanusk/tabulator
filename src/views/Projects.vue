@@ -1,10 +1,10 @@
 <template>
     <div class="projects">
         <b-card
+            class="project-card"
             v-for="project in projectsSorted"
             v-bind:key="project.name"
             body-class="m-0 p-0"
-            class="m-1"
         >
             <b-container
                 class="project-header d-flex justify-content-between align-items-center"
@@ -58,18 +58,22 @@ export default class Projects extends Vue {
 
 <style scoped lang="scss">
 .projects {
-    .project-header {
-        padding: 5px;
-        background-color: azure;
-        cursor: pointer;
-        .project-name {
-            margin: auto 0;
-            font-weight: bold;
+    .project-card {
+        margin-top: 2px;
+
+        .project-header {
+            padding: 5px;
+            background-color: azure;
+            cursor: pointer;
+            .project-name {
+                margin: auto 0;
+                font-weight: bold;
+            }
         }
-    }
-    .tabs {
-        border-top: 1px solid lightgrey;
-        font-size: 0.8rem;
+        .tabs {
+            border-top: 1px solid lightgrey;
+            font-size: 0.8rem;
+        }
     }
 }
 </style>

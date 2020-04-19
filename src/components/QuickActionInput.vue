@@ -1,15 +1,17 @@
 <template>
-    <b-form-input
-        :value="qInput"
-        @update="inputUpdate($event)"
-        @keydown.enter.prevent.stop="executeAction"
-        @keydown.down.prevent.stop="selectNextResult"
-        @keydown.up.prevent.stop="selectPreviousResult"
-        :autofocus="true"
-        placeholder="Searched project or tab"
-        debounce="500"
-    >
-    </b-form-input>
+    <div class="quick-action-input">
+        <b-form-input
+            :value="qInput"
+            @update="inputUpdate($event)"
+            @keydown.enter.prevent.stop="executeAction"
+            @keydown.down.prevent.stop="selectNextResult"
+            @keydown.up.prevent.stop="selectPreviousResult"
+            :autofocus="true"
+            placeholder="Searched project or tab"
+            debounce="500"
+        >
+        </b-form-input>
+    </div>
 </template>
 
 <script lang="ts">
@@ -36,4 +38,9 @@ export default class QuickActionInput extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.quick-action-input {
+    padding: 0 5px;
+    margin-bottom: 5px;
+}
+</style>

@@ -44,7 +44,7 @@
                 v-for="project in searchResults.projects"
                 v-bind:key="project.name"
                 body-class="m-0 p-0"
-                class="m-1"
+                class="project-card"
             >
                 <b-container
                     class="project-header d-flex justify-content-between align-items-center"
@@ -158,8 +158,6 @@ export default class QuickAction extends Vue {
 
 <style scoped lang="scss">
 .quick-action {
-    margin: 10px;
-
     .filtered-window {
         margin-top: 5px;
         border: 2px solid rgba(0, 0, 0, 0.225);
@@ -177,18 +175,22 @@ export default class QuickAction extends Vue {
     }
 
     .projects {
-        .project-header {
-            padding: 5px;
-            background-color: azure;
-            cursor: pointer;
-            .project-name {
-                margin: auto 0;
-                font-weight: bold;
+        .project-card {
+            margin-top: 5px;
+
+            .project-header {
+                padding: 5px;
+                background-color: azure;
+                cursor: pointer;
+                .project-name {
+                    margin: auto 0;
+                    font-weight: bold;
+                }
             }
-        }
-        .tabs {
-            border-top: 1px solid lightgrey;
-            font-size: 0.8rem;
+            .tabs {
+                border-top: 1px solid lightgrey;
+                font-size: 0.8rem;
+            }
         }
     }
 }

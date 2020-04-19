@@ -8,7 +8,11 @@
             @create-project="onCreateProject"
         >
         </CreateProject>
-        <b-card v-for="bWindow in bWindows" v-bind:key="bWindow.id">
+        <b-card
+            class="tabs-card"
+            v-for="bWindow in bWindows"
+            v-bind:key="bWindow.id"
+        >
             <TabsList
                 :tabs="bWindow.tabs"
                 :selectedTabs="selectedTabs"
@@ -107,7 +111,7 @@ export default class Tabs extends Vue {
 
 <style scoped lang="scss">
 .card {
-    margin: 5px 5px 12px;
+    margin-top: 5px;
     border: 2px solid rgba(0, 0, 0, 0.225);
     .card-body {
         padding: 0;

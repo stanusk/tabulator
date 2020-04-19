@@ -49,12 +49,11 @@ export default class CreateProject extends Vue {
 
 <style scoped lang="scss">
 .create-project {
-    padding: 10px;
+    padding: 0 5px;
     display: flex;
-    justify-content: space-around;
-
+    justify-content: space-between;
     .project-name {
-        width: 250px;
+        flex-basis: 250px;
     }
 
     button {
