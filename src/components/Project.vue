@@ -2,6 +2,7 @@
     <b-card body-class="m-0 p-0" class="project-card">
         <b-container
             class="project-header d-flex justify-content-between align-items-center"
+            v-b-toggle="`${project.id}`"
         >
             <p class="project-name card-text">{{ project.name }}</p>
             <b-button
@@ -13,24 +14,26 @@
                 <b-icon icon="box-arrow-up-right"> </b-icon>
             </b-button>
         </b-container>
-        <b-list-group flush>
-            <b-list-group-item
-                class="m-1 p-1"
-                v-for="tab in project.tabs"
-                v-bind:key="tab.id"
-                :class="{
-                    active: isSelected(selectedResult, project.id, tab.id),
-                }"
-            >
-                {{ tab.title }}
-            </b-list-group-item>
-            <b-list-group-item
-                class="m-1 p-1"
-                v-if="project.hiddenTabsCount > 0"
-            >
-                (+{{ project.hiddenTabsCount }} tabs)
-            </b-list-group-item>
-        </b-list-group>
+        <b-collapse :visible="expanded" :id="`${project.id}`" class="tabs">
+            <b-list-group flush>
+                <b-list-group-item
+                    class="m-1 p-1"
+                    v-for="tab in project.tabs"
+                    v-bind:key="tab.id"
+                    :class="{
+                        active: isSelected(selectedResult, project.id, tab.id),
+                    }"
+                >
+                    {{ tab.title }}
+                </b-list-group-item>
+                <b-list-group-item
+                    class="m-1 p-1"
+                    v-if="project.hiddenTabsCount > 0"
+                >
+                    (+{{ project.hiddenTabsCount }} tabs)
+                </b-list-group-item>
+            </b-list-group>
+        </b-collapse>
     </b-card>
 </template>
 
@@ -53,6 +56,8 @@ type SelectedResult = null | SearchedProjectResult | SearchedOpenTabResult;
 export default class ProjectComponent extends Vue {
     @Prop()
     project!: SearchedProjectAggregate;
+    @Prop({ default: false })
+    expanded!: boolean;
 
     @Prop({ default: null })
     selectedResult!: SelectedResult;

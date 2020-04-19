@@ -45,6 +45,7 @@
                 v-bind:key="project.name"
                 :project="project"
                 :selected-result="selectedResult"
+                :expanded="true"
                 @revive="revive(project.id)"
             ></project-component>
         </div>
