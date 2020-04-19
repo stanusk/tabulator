@@ -40,52 +40,13 @@
         </b-card>
 
         <div class="projects">
-            <b-card
+            <project-component
                 v-for="project in searchResults.projects"
                 v-bind:key="project.name"
-                body-class="m-0 p-0"
-                class="project-card"
-            >
-                <b-container
-                    class="project-header d-flex justify-content-between align-items-center"
-                >
-                    <p class="project-name card-text">{{ project.name }}</p>
-                    <b-button
-                        @click.stop="revive(project.id)"
-                        variant="outline-primary"
-                        size="sm"
-                        :class="{
-                            active:
-                                selectedResult &&
-                                selectedResult.projectId === project.id &&
-                                !selectedResult.tabId,
-                        }"
-                    >
-                        <b-icon icon="box-arrow-up-right"> </b-icon>
-                    </b-button>
-                </b-container>
-                <b-list-group flush>
-                    <b-list-group-item
-                        class="m-1 p-1"
-                        v-for="tab in project.tabs"
-                        v-bind:key="tab.id"
-                        :class="{
-                            active:
-                                selectedResult &&
-                                selectedResult.projectId === project.id &&
-                                selectedResult.tabId === tab.id,
-                        }"
-                    >
-                        {{ tab.title }}
-                    </b-list-group-item>
-                    <b-list-group-item
-                        class="m-1 p-1"
-                        v-if="project.hiddenTabsCount > 0"
-                    >
-                        (+{{ project.hiddenTabsCount }} tabs)
-                    </b-list-group-item>
-                </b-list-group>
-            </b-card>
+                :project="project"
+                :selected-result="selectedResult"
+                @revive="revive(project.id)"
+            ></project-component>
         </div>
     </div>
 </template>
@@ -113,11 +74,13 @@ import {
     SET_QUICK_ACTION_INPUT,
 } from '@/store/action-types';
 import QuickActionInput from '@/components/QuickActionInput.vue';
+import ProjectComponent from '@/components/Project.vue';
 
 @Component({
     components: {
         TabsList,
         QuickActionInput,
+        ProjectComponent,
     },
 })
 export default class QuickAction extends Vue {
@@ -171,26 +134,6 @@ export default class QuickAction extends Vue {
 
         &.filtered-window {
             border-color: rebeccapurple;
-        }
-    }
-
-    .projects {
-        .project-card {
-            margin-top: 5px;
-
-            .project-header {
-                padding: 5px;
-                background-color: azure;
-                cursor: pointer;
-                .project-name {
-                    margin: auto 0;
-                    font-weight: bold;
-                }
-            }
-            .tabs {
-                border-top: 1px solid lightgrey;
-                font-size: 0.8rem;
-            }
         }
     }
 }
