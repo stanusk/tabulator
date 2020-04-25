@@ -42,7 +42,6 @@ import {
     SearchedOpenTabResult,
     SearchedProjectResult,
 } from '@/typings';
-import TabsList from '@/components/TabsList.vue';
 import {
     ACTIVATE_TAB,
     EXECUTE_QUICK_ACTION,
@@ -57,7 +56,6 @@ import QuickActionWindow from '@/components/QuickActionWindow.vue';
 
 @Component({
     components: {
-        TabsList,
         QuickActionInput,
         ProjectComponent,
         QuickActionWindow,

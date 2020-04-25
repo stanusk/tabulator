@@ -1,13 +1,13 @@
 <template>
     <div>
         <!--<DevHelpers></DevHelpers>-->
-        <CreateProject
+        <create-project
             :disabled="selectedTabs.length === 0"
             :projectName="newProjectName"
             @update-project-name="onUpdateProjectName"
             @create-project="onCreateProject"
         >
-        </CreateProject>
+        </create-project>
 
         <!--        todo: rename to window-component -->
         <quick-action-window
@@ -47,8 +47,6 @@
 </template>
 
 <script lang="ts">
-// @ is an alias to /src
-import TabsList from '@/components/TabsList.vue';
 import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { CREATE_PROJECT, CLOSE_TABS, ACTIVATE_TAB } from '@/store/action-types';
@@ -68,7 +66,6 @@ import { pick } from 'lodash-es';
 
 @Component({
     components: {
-        TabsList,
         CreateProject,
         DevHelpers,
         QuickActionWindow,
