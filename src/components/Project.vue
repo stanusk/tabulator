@@ -46,7 +46,7 @@ import {
     isSearchedProjectTab,
 } from '@/store/helpers/helpers';
 
-// TODO: consider moving to separate typings file
+// TODO: move to separate typings file also from Window.vue
 type SelectedResult = null | SearchedProjectResult | SearchedOpenTabResult;
 
 @Component

@@ -8,48 +8,24 @@
             @select-previous-result="selectPreviousResult"
         ></quick-action-input>
 
-        <b-card
+        <quick-action-window
             v-for="bWindow in searchResults.windows"
             v-bind:key="bWindow.id"
-            class="filtered-window"
-        >
-            <b-list-group flush>
-                <b-list-group-item
-                    button
-                    v-for="tab of bWindow.tabs"
-                    v-bind:key="tab.id"
-                    @click="activateTab(tab.id, bWindow.id)"
-                    class="tab p-2"
-                    :class="{
-                        active:
-                            selectedResult &&
-                            selectedResult.windowId === tab.windowId &&
-                            selectedResult.tabId === tab.id,
-                    }"
-                >
-                    {{ tab.title }}
-                </b-list-group-item>
+            :b-window="bWindow"
+            :selected-result="selectedResult"
+            :hidden-tabs-count="bWindow.hiddenTabsCount"
+            @activate-tab="activateTab"
+        ></quick-action-window>
 
-                <b-list-group-item
-                    v-if="bWindow.hiddenTabsCount > 0"
-                    class="tab p-2"
-                >
-                    (+{{ bWindow.hiddenTabsCount }} tabs)
-                </b-list-group-item>
-            </b-list-group>
-        </b-card>
-
-        <div class="projects">
-            <project-component
-                v-for="project in searchResults.projects"
-                v-bind:key="project.id"
-                :project="project"
-                :selected-result="selectedResult"
-                :hidden-tabs-count="project.hiddenTabsCount"
-                :expanded="true"
-                @revive="revive(project.id)"
-            ></project-component>
-        </div>
+        <project-component
+            v-for="project in searchResults.projects"
+            v-bind:key="project.id"
+            :project="project"
+            :selected-result="selectedResult"
+            :hidden-tabs-count="project.hiddenTabsCount"
+            :expanded="true"
+            @revive="revive(project.id)"
+        ></project-component>
     </div>
 </template>
 
@@ -77,12 +53,14 @@ import {
 } from '@/store/action-types';
 import QuickActionInput from '@/components/QuickActionInput.vue';
 import ProjectComponent from '@/components/Project.vue';
+import QuickActionWindow from '@/components/QuickActionWindow.vue';
 
 @Component({
     components: {
         TabsList,
         QuickActionInput,
         ProjectComponent,
+        QuickActionWindow,
     },
 })
 export default class QuickAction extends Vue {
@@ -111,7 +89,7 @@ export default class QuickAction extends Vue {
         this.$store.dispatch(SET_QUICK_ACTION_INPUT, input);
     }
 
-    activateTab(tabId: number, windowId: number) {
+    activateTab({ tabId, windowId }: { tabId: number; windowId: number }) {
         this.$store.dispatch(ACTIVATE_TAB, { tabId, windowId });
     }
 
@@ -121,22 +99,4 @@ export default class QuickAction extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-.quick-action {
-    .filtered-window {
-        margin-top: 5px;
-        border: 2px solid rgba(0, 0, 0, 0.225);
-        .card-body {
-            padding: 0;
-        }
-        .tab {
-            font-size: 0.9rem;
-            text-align: left;
-        }
-
-        &.filtered-window {
-            border-color: rebeccapurple;
-        }
-    }
-}
-</style>
+<style scoped lang="scss"></style>
