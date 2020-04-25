@@ -100,7 +100,7 @@ export default class ProjectComponent extends Vue {
 
     .project-header {
         padding: 5px;
-        background-color: azure;
+        background-color: rgba(40, 167, 69, 0.25);
         cursor: pointer;
         .project-name {
             margin: auto 0;
