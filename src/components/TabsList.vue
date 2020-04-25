@@ -1,3 +1,4 @@
+<!-- todo: remove TabsList component-->
 <template>
     <b-list-group flush>
         <b-list-group-item

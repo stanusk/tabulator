@@ -1,6 +1,7 @@
 <template>
-    <b-card class="filtered-window">
+    <b-card class="quick-action-window">
         <b-list-group flush>
+            <!--            todo: fix active vs highlight naming-->
             <b-list-group-item
                 button
                 v-for="tab of bWindow.tabs"
@@ -9,9 +10,18 @@
                 class="tab p-2"
                 :class="{
                     active: isSelectedTab(tab.id),
+                    highlight: tab.active,
                 }"
             >
-                {{ tab.title }}
+                <span class="tab-title-text">
+                    {{ tab.title }}
+                </span>
+
+                <slot
+                    name="tabActions"
+                    v-bind:tab="tab"
+                    class="tab-actions"
+                ></slot>
             </b-list-group-item>
 
             <b-list-group-item v-if="hiddenTabsCount > 0" class="tab p-2">
@@ -66,19 +76,31 @@ export default class QuickActionWindow extends Vue {
 </script>
 
 <style scoped lang="scss">
-.filtered-window {
+.quick-action-window {
     margin-top: 5px;
     border: 2px solid rgba(0, 0, 0, 0.225);
+
     .card-body {
         padding: 0;
     }
-    .tab {
-        font-size: 0.9rem;
-        text-align: left;
-    }
 
-    &.filtered-window {
-        border-color: rebeccapurple;
+    .tab {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &.highlight:not(.active) {
+            background-color: azure;
+        }
+
+        .tab-title-text {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+            font-size: 0.9rem;
+        }
     }
 }
 </style>

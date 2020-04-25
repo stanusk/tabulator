@@ -8,19 +8,41 @@
             @create-project="onCreateProject"
         >
         </CreateProject>
-        <b-card
-            class="tabs-card"
+
+        <!--        todo: rename to window-component -->
+        <quick-action-window
             v-for="bWindow in bWindows"
             v-bind:key="bWindow.id"
+            :b-window="bWindow"
+            @activate-tab="onActivateTab"
         >
-            <TabsList
-                :tabs="bWindow.tabs"
-                :selectedTabs="selectedTabs"
-                @close-tab="onCloseTab($event)"
-                @activate-tab="onActivateTab"
-                @toggle-selected-tab="onToggleSelected"
-            />
-        </b-card>
+            <!--            todo: move to TabActionButtons or some such-->
+            <template v-slot:tabActions="slotProps">
+                <div class="tab-title-buttons">
+                    <b-icon
+                        :icon="isSelected(slotProps.tab) ? 'star-fill' : 'star'"
+                        variant="primary"
+                        @click.stop="
+                            toggleSelected(
+                                slotProps.tab,
+                                isSelected(slotProps.tab),
+                                $event
+                            )
+                        "
+                        class="h3 m-0"
+                    >
+                    </b-icon>
+
+                    <b-icon
+                        icon="x"
+                        variant="danger"
+                        @click.stop="onCloseTab(slotProps.tab.id)"
+                        class="h3 m-0"
+                    >
+                    </b-icon>
+                </div>
+            </template>
+        </quick-action-window>
     </div>
 </template>
 
@@ -41,12 +63,15 @@ import {
     SELECT_TAB,
     SET_NEW_PROJECT_NAME,
 } from '@/store/mutation-types';
+import QuickActionWindow from '@/components/QuickActionWindow.vue';
+import { pick } from 'lodash-es';
 
 @Component({
     components: {
         TabsList,
         CreateProject,
         DevHelpers,
+        QuickActionWindow,
     },
 })
 export default class Tabs extends Vue {
@@ -58,6 +83,16 @@ export default class Tabs extends Vue {
 
     @Getter(NEW_PROJECT_NAME)
     newProjectName!: string;
+
+    toggleSelected(tab: TabClean, isSelected: boolean, event: MouseEvent) {
+        const modifiers = pick(event, [
+            'ctrlKey',
+            'shiftKey',
+            'altKey',
+            'metaKey',
+        ]);
+        this.onToggleSelected({ tab, isSelected, modifiers });
+    }
 
     onToggleSelected({
         tab,
@@ -95,8 +130,8 @@ export default class Tabs extends Vue {
         this.$store.dispatch(ACTIVATE_TAB, { tabId, windowId });
     }
 
-    onCloseTab(closedTabsIds: number[]) {
-        this.$store.dispatch(CLOSE_TABS, closedTabsIds);
+    onCloseTab(closedTabsId: number) {
+        this.$store.dispatch(CLOSE_TABS, [closedTabsId]);
     }
 
     onCreateProject() {
@@ -105,6 +140,10 @@ export default class Tabs extends Vue {
 
     onUpdateProjectName(updatedName: string) {
         this.$store.commit(SET_NEW_PROJECT_NAME, updatedName);
+    }
+
+    isSelected(tab: TabClean) {
+        return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
     }
 }
 </script>
@@ -115,6 +154,10 @@ export default class Tabs extends Vue {
     border: 2px solid rgba(0, 0, 0, 0.225);
     .card-body {
         padding: 0;
+    }
+
+    .tab-title-buttons {
+        display: flex;
     }
 }
 </style>
