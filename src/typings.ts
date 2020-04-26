@@ -30,6 +30,12 @@ export interface TabSelectionModifiers {
 }
 
 // quickActions
+
+export type SelectedResult =
+    | null
+    | SearchedProjectResult
+    | SearchedOpenTabResult;
+
 export interface QuickActionSearchResults {
     projects: SearchedProjectResult[];
     openTabs: SearchedOpenTabResult[];

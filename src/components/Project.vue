@@ -36,18 +36,11 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
-import {
-    Project,
-    SearchedOpenTabResult,
-    SearchedProjectResult,
-} from '@/typings';
+import { Project, SelectedResult } from '@/typings';
 import {
     isSearchedProjectResult,
     isSearchedProjectTab,
 } from '@/store/helpers/helpers';
-
-// TODO: move to separate typings file also from Window.vue
-type SelectedResult = null | SearchedProjectResult | SearchedOpenTabResult;
 
 @Component
 export default class ProjectComponent extends Vue {

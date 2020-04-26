@@ -1,7 +1,6 @@
 <template>
     <b-card class="quick-action-window">
         <b-list-group flush>
-            <!--            todo: fix active vs highlight naming-->
             <b-list-group-item
                 button
                 v-for="tab of bWindow.tabs"
@@ -33,15 +32,8 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
-import {
-    SearchedOpenTabResult,
-    SearchedProjectResult,
-    WindowClean,
-} from '@/typings';
+import { SelectedResult, WindowClean } from '@/typings';
 import { isSearchedOpenTabResult } from '@/store/helpers/helpers';
-
-// TODO: move to separate typings file also from Project.vue
-type SelectedResult = null | SearchedProjectResult | SearchedOpenTabResult;
 
 @Component
 export default class QuickActionWindow extends Vue {
