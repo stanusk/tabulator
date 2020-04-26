@@ -9,8 +9,7 @@
         >
         </create-project>
 
-        <!--        todo: rename to window-component -->
-        <quick-action-window
+        <window-component
             v-for="bWindow in bWindows"
             v-bind:key="bWindow.id"
             :b-window="bWindow"
@@ -42,7 +41,7 @@
                     </b-icon>
                 </div>
             </template>
-        </quick-action-window>
+        </window-component>
     </div>
 </template>
 
@@ -61,14 +60,14 @@ import {
     SELECT_TAB,
     SET_NEW_PROJECT_NAME,
 } from '@/store/mutation-types';
-import QuickActionWindow from '@/components/QuickActionWindow.vue';
+import WindowComponent from '@/components/Window.vue';
 import { pick } from 'lodash-es';
 
 @Component({
     components: {
         CreateProject,
         DevHelpers,
-        QuickActionWindow,
+        WindowComponent,
     },
 })
 export default class Tabs extends Vue {

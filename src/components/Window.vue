@@ -36,7 +36,7 @@ import { SelectedResult, WindowClean } from '@/typings';
 import { isSearchedOpenTabResult } from '@/store/helpers/helpers';
 
 @Component
-export default class QuickActionWindow extends Vue {
+export default class WindowComponent extends Vue {
     @Prop()
     bWindow!: WindowClean;
 

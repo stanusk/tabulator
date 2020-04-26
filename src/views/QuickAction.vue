@@ -8,14 +8,14 @@
             @select-previous-result="selectPreviousResult"
         ></quick-action-input>
 
-        <quick-action-window
+        <window-component
             v-for="bWindow in searchResults.windows"
             v-bind:key="bWindow.id"
             :b-window="bWindow"
             :selected-result="selectedResult"
             :hidden-tabs-count="bWindow.hiddenTabsCount"
             @activate-tab="activateTab"
-        ></quick-action-window>
+        ></window-component>
 
         <project-component
             v-for="project in searchResults.projects"
@@ -52,13 +52,13 @@ import {
 } from '@/store/action-types';
 import QuickActionInput from '@/components/QuickActionInput.vue';
 import ProjectComponent from '@/components/Project.vue';
-import QuickActionWindow from '@/components/QuickActionWindow.vue';
+import WindowComponent from '@/components/Window.vue';
 
 @Component({
     components: {
         QuickActionInput,
         ProjectComponent,
-        QuickActionWindow,
+        WindowComponent,
     },
 })
 export default class QuickAction extends Vue {
