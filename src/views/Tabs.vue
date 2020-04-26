@@ -15,31 +15,13 @@
             :b-window="bWindow"
             @activate-tab="onActivateTab"
         >
-            <!--            todo: move to TabActionButtons or some such-->
             <template v-slot:tabActions="slotProps">
-                <div class="tab-title-buttons">
-                    <b-icon
-                        :icon="isSelected(slotProps.tab) ? 'star-fill' : 'star'"
-                        variant="primary"
-                        @click.stop="
-                            toggleSelected(
-                                slotProps.tab,
-                                isSelected(slotProps.tab),
-                                $event
-                            )
-                        "
-                        class="h3 m-0"
-                    >
-                    </b-icon>
-
-                    <b-icon
-                        icon="x"
-                        variant="danger"
-                        @click.stop="onCloseTab(slotProps.tab.id)"
-                        class="h3 m-0"
-                    >
-                    </b-icon>
-                </div>
+                <tab-action-buttons
+                    :tab="slotProps.tab"
+                    :is-selected="isSelected(slotProps.tab.id)"
+                    @close-tab="onCloseTab"
+                    @toggle-selected="onToggleSelected"
+                ></tab-action-buttons>
             </template>
         </window-component>
     </div>
@@ -61,13 +43,14 @@ import {
     SET_NEW_PROJECT_NAME,
 } from '@/store/mutation-types';
 import WindowComponent from '@/components/Window.vue';
-import { pick } from 'lodash-es';
+import TabActionButtons from '@/components/TabActionButtons.vue';
 
 @Component({
     components: {
         CreateProject,
         DevHelpers,
         WindowComponent,
+        TabActionButtons,
     },
 })
 export default class Tabs extends Vue {
@@ -79,16 +62,6 @@ export default class Tabs extends Vue {
 
     @Getter(NEW_PROJECT_NAME)
     newProjectName!: string;
-
-    toggleSelected(tab: TabClean, isSelected: boolean, event: MouseEvent) {
-        const modifiers = pick(event, [
-            'ctrlKey',
-            'shiftKey',
-            'altKey',
-            'metaKey',
-        ]);
-        this.onToggleSelected({ tab, isSelected, modifiers });
-    }
 
     onToggleSelected({
         tab,
@@ -138,8 +111,8 @@ export default class Tabs extends Vue {
         this.$store.commit(SET_NEW_PROJECT_NAME, updatedName);
     }
 
-    isSelected(tab: TabClean) {
-        return this.selectedTabs.find(t => t.id === tab.id) !== undefined;
+    isSelected(tabId: number) {
+        return this.selectedTabs.find(t => t.id === tabId) !== undefined;
     }
 }
 </script>
@@ -150,10 +123,6 @@ export default class Tabs extends Vue {
     border: 2px solid rgba(0, 0, 0, 0.225);
     .card-body {
         padding: 0;
-    }
-
-    .tab-title-buttons {
-        display: flex;
     }
 }
 </style>
