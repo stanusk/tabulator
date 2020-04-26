@@ -1,22 +1,25 @@
 <template>
     <div class="create-project">
-        <b-form-input
+        <q-input
             class="project-name"
-            placeholder="Project name"
             :value="projectName"
             :autofocus="true"
             @input="updateProjectName($event)"
             @keyup.enter="createProjectUnlessDisabled()"
-        >
-        </b-form-input>
-
-        <b-button
+            placeholder="Project name"
+            dense
+            outlined
+        />
+        <q-btn
             @click="createProject()"
-            variant="primary"
             :disabled="disabled"
+            color="primary"
+            icon="archive"
         >
-            <b-icon icon="archive-fill"> </b-icon>
-        </b-button>
+            <q-tooltip :delay="500">
+                Archive selected tabs as a project
+            </q-tooltip>
+        </q-btn>
     </div>
 </template>
 
