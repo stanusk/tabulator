@@ -1,20 +1,30 @@
 <template>
-    <div class="tab-title-buttons">
-        <b-icon
-            :icon="isSelected ? 'star-fill' : 'star'"
-            variant="primary"
+    <div>
+        <q-btn
+            :icon="isSelected ? 'check_box' : 'check_box_outline_blank'"
             @click.stop="toggleSelected(tab, isSelected, $event)"
-            class="h3 m-0"
+            color="primary"
+            size="sm"
+            round
+            flat
         >
-        </b-icon>
+            <q-tooltip :delay="500">
+                Add tab to project
+            </q-tooltip>
+        </q-btn>
 
-        <b-icon
-            icon="x"
-            variant="danger"
+        <q-btn
             @click.stop="closeTab(tab.id)"
-            class="h3 m-0"
+            icon="delete_forever"
+            color="negative"
+            size="sm"
+            round
+            flat
         >
-        </b-icon>
+            <q-tooltip :delay="500">
+                Close tab
+            </q-tooltip>
+        </q-btn>
     </div>
 </template>
 
@@ -49,8 +59,4 @@ export default class TabActionButtons extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-.tab-title-buttons {
-    display: flex;
-}
-</style>
+<style scoped lang="scss"></style>

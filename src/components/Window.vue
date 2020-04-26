@@ -1,33 +1,41 @@
 <template>
-    <b-card class="quick-action-window">
-        <b-list-group flush>
-            <b-list-group-item
-                button
-                v-for="tab of bWindow.tabs"
-                v-bind:key="tab.id"
-                @click="activateTab(tab.id)"
-                class="tab p-2"
-                :class="{
-                    active: isSelectedTab(tab.id),
-                    highlight: tab.active,
-                }"
-            >
-                <span class="tab-title-text">
+    <q-list class="window" bordered>
+        <q-item
+            clickable
+            v-ripple
+            v-for="tab of bWindow.tabs"
+            v-bind:key="tab.id"
+            @click="activateTab(tab.id)"
+            class="tab"
+            :class="{
+                active: isSelectedTab(tab.id),
+                highlight: tab.active,
+            }"
+        >
+            <q-item-section>
+                <q-item-label class="tab-title-text">
                     {{ tab.title }}
-                </span>
+                </q-item-label>
 
+                <q-tooltip :delay="500">
+                    <p>{{ tab.title }}</p>
+                    <p>{{ tab.url }}</p>
+                </q-tooltip>
+            </q-item-section>
+
+            <q-item-section side>
                 <slot
                     name="tabActions"
                     v-bind:tab="tab"
                     class="tab-actions"
                 ></slot>
-            </b-list-group-item>
+            </q-item-section>
+        </q-item>
 
-            <b-list-group-item v-if="hiddenTabsCount > 0" class="tab p-2">
-                (+{{ hiddenTabsCount }} tabs)
-            </b-list-group-item>
-        </b-list-group>
-    </b-card>
+        <q-item v-if="hiddenTabsCount > 0" class="tab">
+            (+{{ hiddenTabsCount }} tabs)
+        </q-item>
+    </q-list>
 </template>
 
 <script lang="ts">
@@ -68,30 +76,19 @@ export default class WindowComponent extends Vue {
 </script>
 
 <style scoped lang="scss">
-.quick-action-window {
+.window {
     margin-top: 5px;
-    border: 2px solid rgba(0, 0, 0, 0.225);
-
-    .card-body {
-        padding: 0;
-    }
 
     .tab {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
         &.highlight:not(.active) {
             background-color: azure;
         }
 
         .tab-title-text {
-            flex-grow: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: left;
-            font-size: 0.9rem;
         }
     }
 }
