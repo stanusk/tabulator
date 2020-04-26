@@ -117,12 +117,4 @@ export default class Tabs extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-.card {
-    margin-top: 5px;
-    border: 2px solid rgba(0, 0, 0, 0.225);
-    .card-body {
-        padding: 0;
-    }
-}
-</style>
+<style scoped lang="scss"></style>
