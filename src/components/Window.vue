@@ -1,36 +1,17 @@
 <template>
     <q-list class="window" bordered>
-        <q-item
-            clickable
-            v-ripple
+        <tab-component
             v-for="tab of bWindow.tabs"
             v-bind:key="tab.id"
-            @click="activateTab(tab.id)"
-            class="tab"
-            :class="{
-                active: isSelectedTab(tab.id),
-                highlight: tab.active,
-            }"
+            :tab="tab"
+            :is-selected="isSelectedTab(tab.id)"
+            :is-active="tab.active"
+            @activate-tab="activateTab(tab.id)"
         >
-            <q-item-section>
-                <q-item-label class="tab-title-text">
-                    {{ tab.title }}
-                </q-item-label>
-
-                <q-tooltip :delay="500">
-                    <p>{{ tab.title }}</p>
-                    <p>{{ tab.url }}</p>
-                </q-tooltip>
-            </q-item-section>
-
-            <q-item-section side>
-                <slot
-                    name="tabActions"
-                    v-bind:tab="tab"
-                    class="tab-actions"
-                ></slot>
-            </q-item-section>
-        </q-item>
+            <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
+                <slot :name="slot" v-bind="scope" />
+            </template>
+        </tab-component>
 
         <q-item v-if="hiddenTabsCount > 0" class="tab">
             (+{{ hiddenTabsCount }} tabs)
@@ -42,8 +23,13 @@
 import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import { SelectedResult, WindowClean } from '@/typings';
 import { isSearchedOpenTabResult } from '@/store/helpers/helpers';
+import TabComponent from '@/components/Tab.vue';
 
-@Component
+@Component({
+    components: {
+        TabComponent,
+    },
+})
 export default class WindowComponent extends Vue {
     @Prop()
     bWindow!: WindowClean;
@@ -78,18 +64,5 @@ export default class WindowComponent extends Vue {
 <style scoped lang="scss">
 .window {
     margin-top: 5px;
-
-    .tab {
-        &.highlight:not(.active) {
-            background-color: azure;
-        }
-
-        .tab-title-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: left;
-        }
-    }
 }
 </style>
