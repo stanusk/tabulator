@@ -1,8 +1,8 @@
 <template>
-    <b-container class="d-flex justify-content-around">
-        <b-button variant="danger" @click="clear">Clear</b-button>
-        <b-button variant="info" @click="logSize">Log storage size</b-button>
-    </b-container>
+    <q-btn-group class="buttons">
+        <q-btn color="negative" @click="clear">Clear storage</q-btn>
+        <q-btn color="dark" @click="logSize">Log storage size</q-btn>
+    </q-btn-group>
 </template>
 
 <script>
@@ -20,4 +20,8 @@ export default class DevHelpers extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.buttons {
+    margin: 10px auto;
+}
+</style>

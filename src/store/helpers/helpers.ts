@@ -9,6 +9,8 @@ import {
     WindowClean,
 } from '@/typings';
 
+// todo: unify const/function
+
 // clean url from suspender extension additions
 export const cleanUrl = (url: string) => {
     const urlTargetIndex = url.indexOf('http');
