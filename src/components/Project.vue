@@ -1,37 +1,42 @@
 <template>
-    <b-card body-class="m-0 p-0" class="project-card">
-        <b-container
-            class="project-header d-flex justify-content-between align-items-center"
-            v-b-toggle="`${project.id}`"
+    <q-card square class="project-card">
+        <q-card-section
+            :class="{
+                'bg-primary text-white': isSelected(selectedResult, project.id),
+            }"
+            @click="expanded = !expanded"
+            class="project-header"
         >
-            <p class="project-name card-text">{{ project.name }}</p>
-            <b-button
+            <p class="project-name">{{ project.name }}</p>
+
+            <q-btn
+                :color="isSelected(selectedResult, project.id) ? '' : 'primary'"
                 @click.stop="revive"
-                variant="outline-primary"
+                icon="launch"
                 size="sm"
-                :class="{ active: isSelected(selectedResult, project.id) }"
+                flat
+                round
             >
-                <b-icon icon="box-arrow-up-right"> </b-icon>
-            </b-button>
-        </b-container>
-        <b-collapse :visible="expanded" :id="`${project.id}`" class="tabs">
-            <b-list-group flush>
-                <b-list-group-item
-                    class="m-1 p-1"
+            </q-btn>
+        </q-card-section>
+        <q-slide-transition>
+            <!-- todo: use window -->
+            <q-list separator bordered v-show="expanded" class="tabs">
+                <q-item
                     v-for="tab in project.tabs"
                     v-bind:key="tab.id"
-                    :class="{
-                        active: isSelected(selectedResult, project.id, tab.id),
-                    }"
+                    :active="isSelected(selectedResult, project.id, tab.id)"
                 >
-                    {{ tab.title }}
-                </b-list-group-item>
-                <b-list-group-item class="m-1 p-1" v-if="hiddenTabsCount > 0">
-                    (+{{ hiddenTabsCount }} tabs)
-                </b-list-group-item>
-            </b-list-group>
-        </b-collapse>
-    </b-card>
+                    <q-item-section>{{ tab.title }}</q-item-section>
+                </q-item>
+                <q-item v-if="hiddenTabsCount > 0">
+                    <q-item-section>
+                        (+{{ hiddenTabsCount }} tabs)
+                    </q-item-section>
+                </q-item>
+            </q-list>
+        </q-slide-transition>
+    </q-card>
 </template>
 
 <script lang="ts">
@@ -92,17 +97,21 @@ export default class ProjectComponent extends Vue {
     margin-top: 5px;
 
     .project-header {
-        padding: 5px;
-        background-color: rgba(40, 167, 69, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
         cursor: pointer;
+
         .project-name {
-            margin: auto 0;
-            font-weight: bold;
+            margin: 0;
+            font-size: 1.1rem;
         }
     }
+
     .tabs {
-        border-top: 1px solid lightgrey;
-        font-size: 0.8rem;
+        text-align: left;
+        font-size: 0.9rem;
     }
 }
 </style>
