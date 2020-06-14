@@ -20,12 +20,12 @@ import {
 import { NEW_PROJECT_NAME, PROJECTS } from '@/store/getter-types';
 import {
     findTabByUrl,
-    getUrlsPerWindow,
     makeStorageProjectId,
     packProjectForStorage,
     getWindowsWithSelectedTabs,
     unpackProjectFromStorage,
 } from '@/store/helpers/projects';
+import { ensure } from '@/store/helpers/helpers';
 
 const state = {
     projects: [] as Project[],
@@ -80,21 +80,15 @@ const actions: ActionTree<ProjectsState, RootState> = {
         { dispatch, state },
         { projectId, tabId }: { projectId: number; tabId?: number }
     ) {
-        const project = state.projects.find(p => p.id === projectId);
-
-        if (!project) {
-            alert(
-                'opening project failed: could not find project with id: ' +
-                    projectId
-            );
-            return;
-        }
-
-        const windowsCreatePromises = getUrlsPerWindow(project.tabs).map(
-            urls => {
-                return browser.windows.create({ url: urls });
-            }
+        const project = ensure(
+            state.projects.find(p => p.id === projectId),
+            `opening project failed: could not find project with id: ${projectId}`
         );
+
+        const windowsCreatePromises = project.windows.map(browserWindow => {
+            const windowTabsUrls = browserWindow.tabs.map(tab => tab.url);
+            return browser.windows.create({ url: windowTabsUrls });
+        });
 
         if (!tabId) {
             return Promise.all(windowsCreatePromises).then(

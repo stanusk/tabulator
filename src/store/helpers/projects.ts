@@ -68,20 +68,6 @@ export const makeProjectIdFromStorageProjectId = (
     return Number(storageProjectId.split('_')[1]);
 };
 
-export const getUrlsPerWindow = (tabs: TabClean[]) => {
-    const urlsByWindowIdDict = tabs.reduce((urlsDict, tab) => {
-        if (!has(urlsDict, tab.windowId)) {
-            urlsDict[tab.windowId] = [tab.url];
-        } else {
-            urlsDict[tab.windowId] = [...urlsDict[tab.windowId], tab.url];
-        }
-
-        return urlsDict;
-    }, {} as { [windowId: number]: string[] });
-
-    return Object.values(urlsByWindowIdDict);
-};
-
 export const findTabByUrl = (
     windows: (browser.windows.Window | undefined)[],
     url: string
