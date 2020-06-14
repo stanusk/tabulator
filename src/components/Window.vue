@@ -1,22 +1,27 @@
 <template>
-    <q-list class="window" bordered>
-        <tab-component
-            v-for="tab of bWindow.tabs"
-            v-bind:key="tab.id"
-            :tab="tab"
-            :is-selected="isSelectedTab(tab.id)"
-            :is-active="tab.active"
-            @activate-tab="activateTab(tab.id)"
-        >
-            <template v-for="(_, slot) of $scopedSlots" v-slot:[slot]="scope">
-                <slot :name="slot" v-bind="scope" />
-            </template>
-        </tab-component>
+    <q-card>
+        <q-list class="window" separator>
+            <tab-component
+                v-for="tab of bWindow.tabs"
+                v-bind:key="tab.id"
+                :tab="tab"
+                :is-selected="isSelectedTab(tab.id, tab.windowId)"
+                :is-active="tab.active"
+                @activate-tab="activateTab(tab.id, tab.windowId)"
+            >
+                <template
+                    v-for="(_, slot) of $scopedSlots"
+                    v-slot:[slot]="scope"
+                >
+                    <slot :name="slot" v-bind="scope" />
+                </template>
+            </tab-component>
 
-        <q-item v-if="hiddenTabsCount > 0" class="tab">
-            (+{{ hiddenTabsCount }} tabs)
-        </q-item>
-    </q-list>
+            <q-item v-if="hiddenTabsCount > 0" class="tab">
+                (+{{ hiddenTabsCount }} tabs)
+            </q-item>
+        </q-list>
+    </q-card>
 </template>
 
 <script lang="ts">
@@ -41,11 +46,11 @@ export default class WindowComponent extends Vue {
     hiddenTabsCount!: number;
 
     @Emit('activate-tab')
-    activateTab(tabId: number) {
-        return { tabId, windowId: this.bWindow.id };
+    activateTab(tabId: number, windowId: number) {
+        return { tabId, windowId };
     }
 
-    isSelectedTab(tabId: number) {
+    isSelectedTab(tabId: number, windowId: number) {
         if (
             !this.selectedResult ||
             !isSearchedOpenTabResult(this.selectedResult)
@@ -54,7 +59,7 @@ export default class WindowComponent extends Vue {
         }
 
         return (
-            this.selectedResult.windowId === this.bWindow.id &&
+            this.selectedResult.windowId === windowId &&
             this.selectedResult.tabId === tabId
         );
     }
