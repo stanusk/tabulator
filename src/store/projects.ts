@@ -23,6 +23,7 @@ import {
     getUrlsPerWindow,
     makeStorageProjectId,
     packProjectForStorage,
+    getWindowsWithSelectedTabs,
     unpackProjectFromStorage,
 } from '@/store/helpers/projects';
 
@@ -46,10 +47,13 @@ const actions: ActionTree<ProjectsState, RootState> = {
     [CREATE_PROJECT]({ commit, dispatch, rootState, state }) {
         const newProjectId = rootState.extensionProps.lastProjectId + 1;
 
-        const newProject = {
+        const newProject: Project = {
             id: newProjectId,
             name: state.newProjectName,
-            tabs: rootState.windows.selectedTabs,
+            windows: getWindowsWithSelectedTabs(
+                rootState.windows.selectedTabs,
+                rootState.windows.windows
+            ),
         };
 
         return browser.storage.sync

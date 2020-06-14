@@ -1,11 +1,12 @@
-import { Project, ProjectsStorage, TabClean } from '@/typings';
+import { Project, ProjectsStorage, TabClean, WindowClean } from '@/typings';
 import { has, startsWith } from 'lodash-es';
+import { ensure } from '@/store/helpers/helpers';
 
 export const packProjectForStorage = (project: Project): ProjectsStorage => {
     return {
         [makeStorageProjectId(project.id)]: {
             name: project.name,
-            tabs: project.tabs,
+            windows: project.windows,
         },
     };
 };
@@ -22,6 +23,38 @@ export const unpackProjectFromStorage = (
         };
     });
 };
+
+export function getWindowsWithSelectedTabs(
+    selectedTabs: TabClean[],
+    browserWindows: WindowClean[]
+) {
+    const resultWindows = [] as WindowClean[];
+
+    for (const selectedTab of selectedTabs) {
+        const windowInResults = resultWindows.find(
+            win => win.id === selectedTab.windowId
+        );
+
+        if (windowInResults) {
+            windowInResults.tabs.push(selectedTab);
+        } else {
+            const windowOfSelectedTab = ensure(
+                browserWindows.find(win => win.id === selectedTab.windowId),
+                `selected tab could not be found in windows: ${JSON.stringify(
+                    selectedTab,
+                    null,
+                    2
+                )}`
+            );
+
+            windowOfSelectedTab.tabs = [selectedTab];
+
+            resultWindows.push(windowOfSelectedTab);
+        }
+    }
+
+    return resultWindows;
+}
 
 export const makeStorageProjectId = (projectId: number): string => {
     return 'p_' + projectId;

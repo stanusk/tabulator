@@ -20,6 +20,7 @@ import { SELECTED_TABS, WINDOWS } from '@/store/getter-types';
 import { uniqBy } from 'lodash-es';
 
 const state = {
+    // todo: rename to openWindows for clarity
     windows: [] as WindowClean[],
     selectedTabs: [] as TabClean[],
 };

@@ -2,7 +2,7 @@
 export interface Project {
     id: number;
     name: string;
-    tabs: TabClean[];
+    windows: WindowClean[];
 }
 
 export interface ProjectsStorage {
