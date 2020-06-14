@@ -5,6 +5,7 @@
             <router-link to="/tabs">Tabs</router-link> |
             <router-link to="/projects">Projects</router-link>
         </div>
+        <!--        <DevHelpers></DevHelpers>-->
         <router-view />
     </div>
 </template>
@@ -12,8 +13,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { DOWNLOAD_PROJECTS, LOAD_WINDOWS } from '@/store/action-types';
+import DevHelpers from '@/components/DevHelpers.vue';
 
-@Component
+@Component({ components: { DevHelpers } })
 export default class App extends Vue {
     created(): void {
         this.$store.dispatch(LOAD_WINDOWS);

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <!--<DevHelpers></DevHelpers>-->
         <create-project
             :disabled="selectedTabs.length === 0"
             :projectName="newProjectName"
@@ -32,7 +31,6 @@ import CreateProject from '@/components/CreateProject.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { CREATE_PROJECT, CLOSE_TABS, ACTIVATE_TAB } from '@/store/action-types';
 import { TabClean, TabSelectionModifiers, WindowClean } from '@/typings';
-import DevHelpers from '@/components/DevHelpers.vue';
 import { Getter } from 'vuex-class';
 import { NEW_PROJECT_NAME, SELECTED_TABS, WINDOWS } from '@/store/getter-types';
 import {
@@ -48,7 +46,6 @@ import TabActionButtons from '@/components/TabActionButtons.vue';
 @Component({
     components: {
         CreateProject,
-        DevHelpers,
         WindowComponent,
         TabActionButtons,
     },
