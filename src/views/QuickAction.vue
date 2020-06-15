@@ -24,7 +24,7 @@
             :selected-result="selectedResult"
             :hidden-tabs-count="project.hiddenTabsCount"
             :expanded-init="true"
-            @revive="revive(project.id)"
+            @revive="revive"
         ></project-component>
     </div>
 </template>
@@ -91,8 +91,12 @@ export default class QuickAction extends Vue {
         this.$store.dispatch(ACTIVATE_TAB, { tabId, windowId });
     }
 
-    revive(projectId: number) {
-        this.$store.dispatch(REVIVE_PROJECT, { projectId });
+    revive(reviveConfig: {
+        projectId: number;
+        windowId?: number;
+        tabId?: number;
+    }) {
+        this.$store.dispatch(REVIVE_PROJECT, reviveConfig);
     }
 }
 </script>

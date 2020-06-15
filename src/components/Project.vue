@@ -27,6 +27,7 @@
                     :b-window="bWindow"
                     :selected-result="selectedResult"
                     :hidden-tabs-count="bWindow.hiddenTabsCount"
+                    @activate-tab="revive"
                 ></window-component>
             </div>
         </q-slide-transition>
@@ -54,7 +55,13 @@ export default class ProjectComponent extends Vue {
     expandedInit!: boolean;
 
     @Emit('revive')
-    revive() {}
+    revive(event: MouseEvent | { windowId: number; tabId: number }) {
+        const reviveConfig = { projectId: this.project.id };
+
+        return 'windowId' in event
+            ? { ...reviveConfig, ...event }
+            : reviveConfig;
+    }
 
     get isExpanded() {
         return this.expandedInit || this.expanded;

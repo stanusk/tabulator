@@ -4,7 +4,7 @@
             v-for="project in projectsSorted"
             v-bind:key="project.id"
             :project="project"
-            @revive="revive(project.id)"
+            @revive="revive"
         ></project-component>
     </div>
 </template>
@@ -26,8 +26,12 @@ export default class Projects extends Vue {
         return this.projects.sort((a, b) => b.id - a.id);
     }
 
-    revive(projectId: number) {
-        this.$store.dispatch(REVIVE_PROJECT, { projectId });
+    revive(reviveConfig: {
+        projectId: number;
+        windowId?: number;
+        tabId?: number;
+    }) {
+        this.$store.dispatch(REVIVE_PROJECT, reviveConfig);
     }
 }
 </script>
