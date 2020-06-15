@@ -24,7 +24,7 @@
             :selected-result="selectedResult"
             :hidden-tabs-count="project.hiddenTabsCount"
             :hidden-windows-count="project.hiddenWindowsCount"
-            :expanded-init="true"
+            :expanded="true"
             @revive="revive"
         ></project-component>
     </div>

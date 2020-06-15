@@ -20,7 +20,7 @@
             </q-btn>
         </q-card-section>
         <q-slide-transition>
-            <div v-show="isExpanded">
+            <div v-show="expanded">
                 <window-component
                     v-for="bWindow in project.windows"
                     v-bind:key="bWindow.id"
@@ -60,7 +60,7 @@ export default class ProjectComponent extends Vue {
     selectedResult!: SelectedResult;
 
     @Prop({ default: false })
-    expandedInit!: boolean;
+    expanded!: boolean;
 
     @Prop({ default: 0 })
     hiddenTabsCount!: number;
@@ -76,12 +76,6 @@ export default class ProjectComponent extends Vue {
             ? { ...reviveConfig, ...event }
             : reviveConfig;
     }
-
-    get isExpanded() {
-        return this.expandedInit || this.expanded;
-    }
-
-    expanded = false;
 
     isSelected(
         selectedResult: SelectedResult,
