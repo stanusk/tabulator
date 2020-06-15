@@ -27,7 +27,7 @@
 <script lang="ts">
 import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import { SelectedResult, WindowClean } from '@/typings';
-import { isSearchedOpenTabResult } from '@/store/helpers/helpers';
+import { isSearchedProjectResult } from '@/store/helpers/helpers';
 import TabComponent from '@/components/Tab.vue';
 
 @Component({
@@ -53,7 +53,7 @@ export default class WindowComponent extends Vue {
     isSelectedTab(tabId: number, windowId: number) {
         if (
             !this.selectedResult ||
-            !isSearchedOpenTabResult(this.selectedResult)
+            isSearchedProjectResult(this.selectedResult)
         ) {
             return false;
         }
