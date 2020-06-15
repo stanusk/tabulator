@@ -78,7 +78,11 @@ const actions: ActionTree<ProjectsState, RootState> = {
     },
     [REVIVE_PROJECT](
         { dispatch, state },
-        { projectId, tabId }: { projectId: number; tabId?: number }
+        {
+            projectId,
+            windowId,
+            tabId,
+        }: { projectId: number; windowId?: number; tabId?: number }
     ) {
         const project = ensure(
             state.projects.find(p => p.id === projectId),
@@ -102,13 +106,14 @@ const actions: ActionTree<ProjectsState, RootState> = {
                 }
             );
         } else {
-            const targetTab = project.tabs.find(tab => tab.id === tabId);
-            if (!targetTab) {
-                console.warn(
-                    `REVIVE_PROJECT: activating tabId ${tabId} not possible - tab not found in current projects.`
-                );
-                return;
-            }
+            const targetWindow = ensure(
+                project.windows.find(win => win.id === windowId),
+                `REVIVE_PROJECT: activating windowId ${windowId} & tabId ${tabId} not possible - window not found in project.`
+            );
+            const targetTab = ensure(
+                targetWindow.tabs.find(tab => tab.id === tabId),
+                `REVIVE_PROJECT: activating windowId ${windowId} & tabId ${tabId} not possible - tab not found in project.`
+            );
 
             const targetUrl = targetTab.url;
 

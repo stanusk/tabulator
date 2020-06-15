@@ -1,5 +1,5 @@
 import { Project, ProjectsStorage, TabClean, WindowClean } from '@/typings';
-import { has, startsWith } from 'lodash-es';
+import { startsWith } from 'lodash-es';
 import { ensure } from '@/store/helpers/helpers';
 
 export const packProjectForStorage = (project: Project): ProjectsStorage => {
