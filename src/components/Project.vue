@@ -29,6 +29,14 @@
                     :hidden-tabs-count="bWindow.hiddenTabsCount"
                     @activate-tab="revive"
                 ></window-component>
+                <q-list separator bordered>
+                    <q-item v-if="hiddenWindowsCount > 0">
+                        <q-item-section>
+                            ({{ hiddenTabsCount }} tabs in
+                            {{ hiddenWindowsCount }} windows)
+                        </q-item-section>
+                    </q-item>
+                </q-list>
             </div>
         </q-slide-transition>
     </q-card>
@@ -53,6 +61,12 @@ export default class ProjectComponent extends Vue {
 
     @Prop({ default: false })
     expandedInit!: boolean;
+
+    @Prop({ default: 0 })
+    hiddenTabsCount!: number;
+
+    @Prop({ default: 0 })
+    hiddenWindowsCount!: number;
 
     @Emit('revive')
     revive(event: MouseEvent | { windowId: number; tabId: number }) {
@@ -112,11 +126,6 @@ export default class ProjectComponent extends Vue {
             margin: 0;
             font-size: 1.1rem;
         }
-    }
-
-    .tabs {
-        text-align: left;
-        font-size: 0.9rem;
     }
 }
 </style>
