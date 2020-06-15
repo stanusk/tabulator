@@ -47,14 +47,12 @@ export interface SearchedProject {
     projectId: number;
 }
 
-export interface SearchedProjectTab extends SearchedProject {
-    tabId: number;
-}
-
 export interface SearchedOpenTabResult {
     windowId: number;
     tabId: number;
 }
+
+export type SearchedProjectTab = SearchedProject & SearchedOpenTabResult;
 
 export interface AggregatedSearchResults {
     projects: SearchedProjectAggregate[];

@@ -54,19 +54,19 @@ export function clearStorage() {
 export function isSearchedProjectTab(
     item: SearchedProject | SearchedProjectTab
 ): item is SearchedProjectTab {
-    return 'tabId' in item;
-}
-
-export function isSearchedOpenTabResult(
-    result: SearchedOpenTabResult | SearchedProjectResult
-): result is SearchedOpenTabResult {
-    return 'windowId' in result;
+    return 'tabId' in item && 'windowId' in item;
 }
 
 export function isSearchedProjectResult(
     result: SearchedOpenTabResult | SearchedProjectResult
 ): result is SearchedProjectResult {
     return 'projectId' in result;
+}
+
+export function isSearchedOpenTabResult(
+    result: SearchedOpenTabResult | SearchedProjectResult
+): result is SearchedOpenTabResult {
+    return !isSearchedProjectResult(result);
 }
 
 export function ensure<T>(

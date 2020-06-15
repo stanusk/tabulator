@@ -25,7 +25,9 @@ export const findOpenTabs = (searchPhrase: string, windows: WindowClean[]) => {
 };
 
 const findProjectTabs = (searchPhrase: string, project: Project) => {
-    return project.tabs.reduce((result, tab) => {
+    const projectTabs = project.windows.map(win => win.tabs).flat();
+
+    return projectTabs.reduce((result, tab) => {
         return [
             ...result,
             ...(tabSearchableTextContains(searchPhrase, tab)
@@ -33,6 +35,7 @@ const findProjectTabs = (searchPhrase: string, project: Project) => {
                       {
                           projectId: project.id,
                           tabId: tab.id,
+                          windowId: tab.windowId,
                       },
                   ]
                 : []),

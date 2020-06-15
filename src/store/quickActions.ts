@@ -191,7 +191,10 @@ const actions: ActionTree<QuickActionsState, RootState> = {
             const reviveParams = {
                 projectId: selectedResult.projectId,
                 ...(isSearchedProjectTab(selectedResult)
-                    ? { tabId: selectedResult.tabId }
+                    ? {
+                          tabId: selectedResult.tabId,
+                          windowId: selectedResult.windowId,
+                      }
                     : {}),
             };
 
