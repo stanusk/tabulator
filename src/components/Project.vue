@@ -20,21 +20,15 @@
             </q-btn>
         </q-card-section>
         <q-slide-transition>
-            <!-- todo: use window -->
-            <q-list separator bordered v-show="expanded" class="tabs">
-                <q-item
-                    v-for="tab in project.tabs"
-                    v-bind:key="tab.id"
-                    :active="isSelected(selectedResult, project.id, tab.id)"
-                >
-                    <q-item-section>{{ tab.title }}</q-item-section>
-                </q-item>
-                <q-item v-if="hiddenTabsCount > 0">
-                    <q-item-section>
-                        (+{{ hiddenTabsCount }} tabs)
-                    </q-item-section>
-                </q-item>
-            </q-list>
+            <div v-show="isExpanded">
+                <window-component
+                    v-for="bWindow in project.windows"
+                    v-bind:key="bWindow.id"
+                    :b-window="bWindow"
+                    :selected-result="selectedResult"
+                    :hidden-tabs-count="bWindow.hiddenTabsCount"
+                ></window-component>
+            </div>
         </q-slide-transition>
     </q-card>
 </template>
@@ -46,8 +40,9 @@ import {
     isSearchedProjectResult,
     isSearchedProjectTab,
 } from '@/store/helpers/helpers';
+import WindowComponent from '@/components/Window.vue';
 
-@Component
+@Component({ components: { WindowComponent } })
 export default class ProjectComponent extends Vue {
     @Prop()
     project!: Project;
@@ -55,14 +50,17 @@ export default class ProjectComponent extends Vue {
     @Prop({ default: null })
     selectedResult!: SelectedResult;
 
-    @Prop({ default: 0 })
-    hiddenTabsCount!: number;
-
     @Prop({ default: false })
-    expanded!: boolean;
+    expandedInit!: boolean;
 
     @Emit('revive')
     revive() {}
+
+    get isExpanded() {
+        return this.expandedInit || this.expanded;
+    }
+
+    expanded = false;
 
     isSelected(
         selectedResult: SelectedResult,

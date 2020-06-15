@@ -23,7 +23,7 @@
             :project="project"
             :selected-result="selectedResult"
             :hidden-tabs-count="project.hiddenTabsCount"
-            :expanded="true"
+            :expanded-init="true"
             @revive="revive(project.id)"
         ></project-component>
     </div>
