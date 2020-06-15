@@ -26,17 +26,20 @@ import {
 import {
     AggregatedSearchResults,
     QuickActionSearchResults,
-    SearchedOpenTabResult,
-    SearchedProjectAggregate,
+    SearchedTabResult,
     SearchedProjectResult,
-    SearchedWindowAggregate,
 } from '@/typings';
 import {
     isSearchedOpenTabResult,
     isSearchedProjectResult,
     isSearchedProjectTab,
 } from '@/store/helpers/helpers';
-import { findOpenTabs, findProjects } from '@/store/helpers/quickActions';
+import {
+    findOpenTabs,
+    findProjects,
+    getProjectsWithWindowsWithSearchedTabs,
+    getWindowsWithSearchedTabs,
+} from '@/store/helpers/quickActions';
 
 const state = {
     input: '' as string,
@@ -44,10 +47,7 @@ const state = {
         projects: [],
         openTabs: [],
     } as QuickActionSearchResults,
-    selectedResult: null as
-        | null
-        | SearchedProjectResult
-        | SearchedOpenTabResult,
+    selectedResult: null as null | SearchedProjectResult | SearchedTabResult,
 };
 
 const actions: ActionTree<QuickActionsState, RootState> = {
@@ -254,96 +254,13 @@ const getters: GetterTree<QuickActionsState, RootState> = {
         getters: any,
         rootState: RootState
     ) {
-        // aggregate projects
-        // todo: refactor/simplify/break down & move to service - just don't keep it this way
-        const projects = rootState.projects.projects.reduce(
-            (result, currentProject) => {
-                const searchResultsMatchingProjectId = state.searchResults.projects.filter(
-                    searchResult => searchResult.projectId === currentProject.id
-                );
-                if (!searchResultsMatchingProjectId.length) {
-                    return result;
-                } else {
-                    const filteredTabs = currentProject.tabs.filter(tab => {
-                        return !!state.searchResults.projects.find(
-                            searchResult =>
-                                isSearchedProjectTab(searchResult) &&
-                                searchResult.projectId === currentProject.id &&
-                                searchResult.tabId === tab.id
-                        );
-                    });
-                    const hiddenTabsCount =
-                        currentProject.tabs.length - filteredTabs.length;
-
-                    return [
-                        ...result,
-                        {
-                            ...currentProject,
-                            tabs: filteredTabs,
-                            hiddenTabsCount,
-                        },
-                    ];
-                }
-            },
-            [] as SearchedProjectAggregate[]
+        const projects = getProjectsWithWindowsWithSearchedTabs(
+            rootState.projects.projects,
+            state.searchResults.projects
         );
-
-        // aggregate windows
-        // todo: refactor/simplify/break down & move to service - just don't keep it this way
-        const allAvailableWindows = rootState.windows.windows;
-        const windows = state.searchResults.openTabs.reduce(
-            (result, currentTab) => {
-                const targetWindow = allAvailableWindows.find(
-                    win => win.id === currentTab.windowId
-                );
-
-                if (!targetWindow) {
-                    console.error(
-                        `AGGREGATED_SEARCH_RESULTS failed: window ${currentTab.windowId} not found!`
-                    );
-                    return result;
-                }
-
-                const targetTab = targetWindow.tabs.find(
-                    tab => tab.id === currentTab.tabId
-                );
-
-                if (!targetTab) {
-                    console.error(
-                        `AGGREGATED_SEARCH_RESULTS failed: tab ${currentTab.tabId} not found!`
-                    );
-                    return result;
-                }
-
-                const targetWindowIndexInResult = result.findIndex(
-                    win => win.id === currentTab.windowId
-                );
-                const windowIsAlreadyInResult = targetWindowIndexInResult > -1;
-
-                if (windowIsAlreadyInResult) {
-                    return result.map((win, index) => {
-                        if (index === targetWindowIndexInResult) {
-                            return {
-                                ...win,
-                                tabs: [...win.tabs, targetTab],
-                                hiddenTabsCount: win.hiddenTabsCount - 1,
-                            };
-                        } else {
-                            return win;
-                        }
-                    });
-                } else {
-                    return [
-                        ...result,
-                        {
-                            ...targetWindow,
-                            tabs: [targetTab],
-                            hiddenTabsCount: targetWindow.tabs.length - 1,
-                        },
-                    ];
-                }
-            },
-            [] as SearchedWindowAggregate[]
+        const windows = getWindowsWithSearchedTabs(
+            rootState.windows.windows,
+            state.searchResults.openTabs
         );
 
         return { projects, windows } as AggregatedSearchResults;

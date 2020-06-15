@@ -1,7 +1,7 @@
 import Tab = browser.tabs.Tab;
 import Window = browser.windows.Window;
 import {
-    SearchedOpenTabResult,
+    SearchedTabResult,
     SearchedProject,
     SearchedProjectResult,
     SearchedProjectTab,
@@ -58,14 +58,14 @@ export function isSearchedProjectTab(
 }
 
 export function isSearchedProjectResult(
-    result: SearchedOpenTabResult | SearchedProjectResult
+    result: SearchedTabResult | SearchedProjectResult
 ): result is SearchedProjectResult {
     return 'projectId' in result;
 }
 
 export function isSearchedOpenTabResult(
-    result: SearchedOpenTabResult | SearchedProjectResult
-): result is SearchedOpenTabResult {
+    result: SearchedTabResult | SearchedProjectResult
+): result is SearchedTabResult {
     return !isSearchedProjectResult(result);
 }
 

@@ -39,7 +39,7 @@ import {
 } from '@/store/getter-types';
 import {
     AggregatedSearchResults,
-    SearchedOpenTabResult,
+    SearchedTabResult,
     SearchedProjectResult,
 } from '@/typings';
 import {
@@ -69,7 +69,7 @@ export default class QuickAction extends Vue {
     searchResults!: AggregatedSearchResults;
 
     @Getter(SELECTED_RESULT)
-    selectedResult!: null | SearchedProjectResult | SearchedOpenTabResult;
+    selectedResult!: null | SearchedProjectResult | SearchedTabResult;
 
     executeQuickAction() {
         this.$store.dispatch(EXECUTE_QUICK_ACTION);
